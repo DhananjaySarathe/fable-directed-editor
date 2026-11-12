@@ -1,7 +1,7 @@
 # Fresh-critic protocol
 
 The builder never judges its own render. After `qa.py` passes, start a NEW `edit-critic` agent (`.claude/agents/edit-critic.md`:
-Fable 5.2 at high effort; where that name is not offered, a general-purpose agent with `model: "fable"`) with the prompt below. It sees only the output and the brief, never the build notes, the intended fixes or claims
+Opus 5.5 at high effort; where that name is not offered, a general-purpose agent with `model: "opus"`) with the prompt below. It sees only the output and the brief, never the build notes, the intended fixes or claims
 about what changed.
 
 1. Make its evidence: `python3 kit/qa/sheet.py <video> <dir> --cuts=<cuts.json>`, `python3 kit/qa/qa.py <video> ... --holds=<holds.json> --json=<dir>/qa.json`

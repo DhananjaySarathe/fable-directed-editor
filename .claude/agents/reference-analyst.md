@@ -2,7 +2,7 @@
 name: reference-analyst
 description: Studies a reference video the owner shares ("edit it like this") and writes a style spec the director builds from - pace, cuts, punch-ins, zooms and camera moves with their sizes, speeds and easing, transitions, headlines and captions, graphics, sound and colour - mapped onto this kit's components, with an honest list of what the kit cannot match yet. Keeps the reference's many frames out of the director's context. One per reference.
 tools: Read, Bash, Glob, Grep, Write
-model: claude-fable-5-2
+model: opus
 effort: high
 omitClaudeMd: true
 ---

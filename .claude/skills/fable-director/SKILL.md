@@ -1,6 +1,6 @@
 ---
 name: fable-director
-description: The entry point for every edit in this project. Load it first whenever the owner gives a take, a Reel or Short, a reference video ("edit it like this"), or asks to edit, re-cut, fix or finish a video - before planning anything and before the look skills (video-shorts, canvas-studio, podcast, documentary, paper-collage). It sets who does what - the main session on Fable 5.2 directs and designs, cheaper models do the mechanical work through the project's agents - the order of the run, how a reference is matched, and how the session stays small and cheap without lowering the edit's quality.
+description: The entry point for every edit in this project. Load it first whenever the owner gives a take, a Reel or Short, a reference video ("edit it like this"), or asks to edit, re-cut, fix or finish a video - before planning anything and before the look skills (video-shorts, canvas-studio, podcast, documentary, paper-collage). It sets who does what - the main session on Fable 5.2 directs and designs, and is the only one on Fable; the project's agents on Opus, Sonnet and Haiku study references, judge renders, run the checks and apply the fix lists - the order of the run, how a reference is matched, and how the session stays small and cheap without lowering the edit's quality.
 ---
 
 # The Fable director
@@ -16,16 +16,17 @@ This skill says who does the work and in what order. The other skills say how: `
 ## Who does what
 
 You, the main session, are the director. The project starts sessions on Fable 5.2 at high effort
-(`.claude/settings.json`). Five agents in `.claude/agents/` take the work that does not need the director.
+(`.claude/settings.json`), and it is the only one on Fable. Five agents in `.claude/agents/` take the work that does
+not need the director, each on a cheaper model.
 
 | Work | Who | Model |
 |---|---|---|
 | Everything a viewer sees or hears: what to keep, the hook, the plan, every scene's design and code (zooms, punches, motion graphics, type, transitions), the sound choices, and every fix that is a matter of taste | the director (this session) | Fable 5.2, high |
-| Studying a reference video and writing its style spec | `reference-analyst` | Fable 5.2, high |
-| Judging a render with fresh eyes | `edit-critic`, a new one each round | Fable 5.2, high |
+| Studying a reference video and writing its style spec | `reference-analyst` | Opus 5.5, high |
+| Judging a render with fresh eyes | `edit-critic`, a new one each round | Opus 5.5, high |
 | Checking facts, capturing real pages and logos | `fact-scout` | Sonnet 5.5 |
-| Applying an exact fix list and running its checks | `edit-builder` | Sonnet 5.5 |
-| Running the text checks, reading their reports and render logs | `qa-reader` | Haiku 5.5 |
+| Applying an exact fix list, rebuilding and re-checking until it passes | `edit-builder` | Sonnet 5.5 |
+| Running the check sweeps, reading their reports and render logs | `qa-reader` | Haiku 5.5 |
 | Renders, grades, transcription | a background shell command | none |
 
 The test for handing something down: it has a right answer that a check can confirm (a file exists, a number
@@ -33,11 +34,40 @@ matches, a tool prints 0 errors). If doing it well needs taste, the director doe
 this zoom snappier" is direction, "set the punch at w142 to x1.15" is a fix list.
 
 Start an agent with the Agent tool and its name as `subagent_type`. If a name is not offered in this session (a new
-agents folder is only picked up by a new session), use a general-purpose agent with the same model (`model: "fable" | "sonnet"
+agents folder is only picked up by a new session), use a general-purpose agent with the same model (`model: "opus" | "sonnet"
 | "haiku"`) and put the body of `.claude/agents/<name>.md` at the top of the prompt.
 
 If this session is not on Fable 5.2, say so in one line and carry on: the owner may have switched on purpose, and
 the roles stay the same.
+
+## Handing down is the default
+
+The table is not a suggestion. A director that runs its own checks and applies its own fixes pays for it on every
+turn: each turn re-reads the whole conversation, so a check-and-fix loop of ten turns in a long session costs about
+a dollar on the director and a few cents on a helper. These three hand-offs happen every time, without weighing it:
+
+- **Check sweeps go to `qa-reader`.** After every build, every draft and the final, give it the whole list in one
+  brief: `plan_check.py`, the cut gate and the joins report, `precheck.mjs`, `qa.py`, the mixer's warnings, the
+  render log. It returns what failed. The director runs a check itself only to confirm one item it has just changed
+  (one command, through the digest), never the sweep.
+- **Fix lists go to `edit-builder`.** After a sweep or a critic round, sort the findings once. Everything with a
+  right answer (a timing, a level, a spelling, a size, a density or framing HIGH with a stated fix) goes on one
+  numbered list, and the builder applies it, rebuilds and re-runs the checks until they pass or it has a question.
+  The director edits only what is a matter of taste, and does that before handing the list over.
+- **Facts go to `fact-scout`.** If the take names a product, a price, a number, a date or a quote, it starts during
+  planning, before any scene shows that evidence.
+
+A helper is skipped only when its work does not exist in this edit (no reference: no `reference-analyst`; nothing
+named on screen: no `fact-scout`). "It was quicker to do it myself" is not a reason.
+
+**The crew check.** `uv run python kit/cost.py --limit=1 --crew` prints this session's bill per model, which
+helpers ran, which never started, and how many checks the director ran itself. Run it after the first draft and at
+the end. If it shows the director running sweeps, or a helper that should have worked and did not, correct it for
+the rest of the edit.
+
+Measured on 2026-11-12, on a 17.8-hour edit that never started the three mechanical helpers: the director ran 28
+prechecks, 14 join checks and 4 plan checks and applied every fix itself over 560 turns, and its share of the bill
+was $113 of $147 at list prices, all on one model.
 
 ## Why it is split this way
 
@@ -51,8 +81,8 @@ The first film Fable 5.2 edited here (2026-11-09, one session of 5.6 hours) cost
 - The two critic rounds cost $18 of the total, and they found the three serious problems of the first draft.
 
 So the creative work is the smallest part of the bill. The waste is a director's conversation that fills up with
-things only read once. An agent reads those in its own context, which is thrown away when it reports back, and for
-mechanical work it does so at a quarter or an eightieth of the director's price.
+things only read once. An agent reads those in its own context, which is thrown away when it reports back, and it
+does so at a lower price: Opus 5.5 lists at half of Fable 5.2, Sonnet 5.5 at a quarter, Haiku 5.5 at an eightieth.
 
 ## Keeping the conversation small
 
@@ -67,9 +97,9 @@ the brief.
   sheet raises a question. A move is judged from a strip of consecutive frames
   (`ffmpeg -v error -ss <t> -i <video> -frames:v 10 -vf "scale=360:-2,tile=10x1" strip.jpg`).
 - **A check's output goes through the digest.** `python3 kit/qa/digest.py -- <the check command>` prints every
-  error as it is, groups the warnings that repeat (60 lines become about 25) and ends with the verdict line. Run one
-  check that way yourself. A sweep of several checks with their JSON reports, or a render log, goes to `qa-reader`,
-  which returns only what failed.
+  error as it is, groups the warnings that repeat (60 lines become about 25) and ends with the verdict line. A
+  single re-check of something you just changed runs that way. A sweep of checks with their JSON reports, or a
+  render log, goes to `qa-reader`, which returns only what failed ("Handing down is the default").
 - **Several things in one message.** Independent commands and agents start together. Pipeline steps that must stop
   on a failure are chained with `&&` in one command.
 - **Long jobs run in the background** (the grade, a draft, the 4K render) and report when they finish. One heavy
@@ -103,21 +133,26 @@ the brief.
    Reel). Every punch lands on a word, every graphic explains the line it sits on, and each thought gets one hero
    moment. Reuse kit components before writing new ones; a new reusable piece goes into the kit with a line in its
    README.
-6. **Look before rendering.** The stills sheet, strips for the moves, precheck at 0 HIGH. Fix what you see now: a
-   problem found in a still costs seconds, the same problem found in a draft costs a render.
-7. **Draft, then the critic.** The 1080p draft renders in the background. `qa-reader` reads its reports. Then a
+6. **Look before rendering.** The director looks at the stills sheet and the strips for the moves. `qa-reader` runs
+   the sweep (plan_check, the cut gate, precheck) and returns what failed; precheck must reach 0 HIGH. What you see
+   in the stills is yours to fix; what the sweep lists goes to `edit-builder` as one list. A problem found in a
+   still costs seconds, the same problem found in a draft costs a render.
+7. **Draft, then the critic.** The 1080p draft renders in the background. `qa-reader` reads its reports and the
+   render log, and the crew check runs once (`kit/cost.py --limit=1 --crew`). Then a
    fresh `edit-critic` gets the render, the brief and the ledger, built from the template in `kit/qa/CRITIC.md`, with
    the hook and pacing rules of `kit/refs/EDITING.md` §3-4 for a Reel and the reference's breakdown folder and style spec for a
    reference match. It never gets the build notes.
 8. **Fix.** Sort the critic's findings. A matter of taste: the director decides and edits. Mechanical: one numbered
-   list for `edit-builder`, each item with its file, the exact change and the check that proves it. One writer on a
-   file at a time, so make the director's edits first and hand over the list after. Look at the builder's stills
-   before the next draft. At most three rounds (CRITIC.md).
+   list for `edit-builder`, each item with its file, the exact change and the check that proves it; the builder
+   rebuilds and re-checks, the director does not. One writer on a file at a time, so make the director's edits
+   first and hand over the list after. Look at the builder's stills before the next draft. At most three rounds
+   (CRITIC.md).
 9. **Final.** The full-quality render once, in the background, then `qa-reader` on the final's qa.py. Deliver what
    the look skill lists (the video, captions, the posting notes, the thumbnail prompt) and name what is still open.
-10. **Close the books.** `uv run python kit/cost.py --limit=1` prints this session's cost and where it went. Add
-    that line and the lessons of the edit to the film's ledger. A lesson that will matter next time goes into the
-    look's README or memory, not only the ledger.
+10. **Close the books.** `uv run python kit/cost.py --limit=1 --crew` prints this session's cost per model, where
+    it went and which helpers ran. Give the owner the per-model lines in the delivery message, and one line of why
+    for any helper that never started. Add them and the lessons of the edit to the film's ledger. A lesson that
+    will matter next time goes into the look's README or memory, not only the ledger.
 
 ## Matching a reference
 
@@ -141,8 +176,9 @@ what the builder intended will find it.
 An agent's report is a claim, not proof. Look at the builder's stills. Open the source of any number that will be
 large on screen. If `qa-reader` says PASS and the picture says otherwise, run the check yourself.
 
-Delegating is not free either: each agent re-reads its own instructions and files. Do not start one for something
-two tool calls settle, and do not start several where one brief would do.
+Delegating is not free either: each agent re-reads its own instructions and files. So give one agent the whole
+sweep or the whole list in one brief, not one agent per check. The three standing hand-offs above are not weighed
+against this; for anything else, do not start an agent for something two tool calls settle.
 
 ## What needs the owner's yes, and what does not
 
@@ -159,5 +195,8 @@ at a time. Finish the edit end to end and list what is open, rather than stoppin
 
 - The model and effort for this project: `.claude/settings.json` (`model`, `modelSettings`). `/effort xhigh` raises
   the director for one session, worth trying on a hero piece; the agents keep their own levels.
-- An agent's model: the `model:` line in `.claude/agents/<name>.md`.
-- What past edits cost: `uv run python kit/cost.py` (this project), `--all` (every project), `--grep=<film name>`.
+- An agent's model: the `model:` line in `.claude/agents/<name>.md`. The critic and the reference analyst run on
+  Opus 5.5 (the owner's choice, 2026-11-12); set `model: claude-fable-5-2` there to put either back on Fable for an
+  edit where the judging matters more than the bill.
+- What past edits cost: `uv run python kit/cost.py` (this project), `--all` (every project), `--grep=<film name>`,
+  `--crew` (which helpers ran in each session and what the director did itself).

@@ -4,6 +4,7 @@
     uv run python kit/cost.py --grep=fable-52-experiments  # every session (any project) that mentions this text
     uv run python kit/cost.py --session=be0e65dd           # one session (id prefix), with its subagents
     uv run python kit/cost.py --since=2026-11-01 --all     # every project since a date
+    uv run python kit/cost.py --limit=1 --crew             # the latest session, with who worked on it (below)
     uv run python kit/cost.py ... --json=out.json          # also write the numbers
 
 Reads ~/.claude/projects/<project>/<session>.jsonl and <session>/subagents/agent-*.jsonl. A model message is logged as
@@ -12,8 +13,14 @@ Under each session it says where the money went: re-reading the conversation on 
 the context a session carries), new context (tool output, files and images read once: cache writes and input), and
 output with thinking. Prices are the Anthropic list prices per million tokens (platform.claude.com/docs/en/about-claude/pricing, read
 2026-11-11). A plan subscription bills differently: these dollars compare models, they are not an invoice.
+
+--crew adds, per session, the agents the main session started (by type), the project's agents it never started, and
+the checks the main session ran itself (precheck, plan_check, qa.py, cutcheck, joins). In this project check sweeps
+belong to qa-reader and fix lists to edit-builder (skill fable-director, "Handing down is the default"), so a director
+that ran 80 checks with no qa-reader in the crew did the cheap work at the expensive price.
 """
 import json
+import re
 import sys
 from collections import defaultdict
 from datetime import datetime
@@ -108,7 +115,43 @@ def tally(msgs):
     return dict(by)
 
 
-def session(path):
+# a check the main session ran itself: what it is called -> how its command looks
+CHECKS = {"precheck": r"node\s+\S*precheck\.mjs|kit\.(?:film|reel)\s+\S+\s+precheck\b",
+          "plan_check": r"python\S*\s+\S*plan_check\.py\s+(?!--help)\S",
+          "qa.py": r"python\S*\s+\S*qa\.py\b",
+          "cutcheck": r"kit\.cut\.cutcheck\b",
+          "joins": r"kit\.(?:film|reel)\s+\S+\s+joins\b|kit\.cut\.relisten\b"}
+
+
+def crew(path, agents_dir=None):
+    """Who worked in a session: the agents its main session started, by type, the project's agents it never started,
+    and the checks it ran itself. Read from the main log's tool calls (each call counted once, by its id)."""
+    started, checks, seen = defaultdict(int), defaultdict(int), set()
+    with open(path, errors="replace") as fh:
+        for line in fh:
+            if '"tool_use"' not in line:
+                continue
+            try:
+                m = json.loads(line).get("message")
+            except ValueError:
+                continue
+            for c in (m.get("content") if isinstance(m, dict) and isinstance(m.get("content"), list) else []):
+                if not isinstance(c, dict) or c.get("type") != "tool_use" or c.get("id") in seen:
+                    continue
+                seen.add(c.get("id"))
+                inp = c.get("input") or {}
+                if c.get("name") in ("Agent", "Task"):
+                    started[inp.get("subagent_type") or "general-purpose"] += 1
+                elif c.get("name") == "Bash":
+                    for name, rx in CHECKS.items():
+                        if re.search(rx, inp.get("command") or ""):
+                            checks[name] += 1
+    agents_dir = agents_dir or HERE / ".claude" / "agents"
+    known = sorted(p.stem for p in agents_dir.glob("*.md")) if agents_dir.is_dir() else []
+    return {"started": dict(started), "never": [a for a in known if a not in started], "checks": dict(checks)}
+
+
+def session(path, with_crew=False):
     msgs, t0, t1, title = read_log(path)
     subs = []
     sub_dir = path.with_suffix("") / "subagents"
@@ -117,8 +160,24 @@ def session(path):
         meta = sp.with_suffix(".meta.json")
         info = json.loads(meta.read_text()) if meta.exists() else {}
         subs.append({"agent": info.get("agentType", "?"), "description": info.get("description", sp.stem), "models": tally(m)})
-    return {"session": path.stem, "project": path.parent.name, "title": title, "start": t0, "end": t1,
-            "main": tally(msgs), "subagents": subs}
+    out = {"session": path.stem, "project": path.parent.name, "title": title, "start": t0, "end": t1,
+           "main": tally(msgs), "subagents": subs}
+    if with_crew:
+        out["crew"] = crew(path)
+    return out
+
+
+def crew_lines(c, turns):
+    """The two lines --crew prints under a session."""
+    ran = ", ".join(f"{a} {n}" for a, n in sorted(c["started"].items(), key=lambda kv: (-kv[1], kv[0]))) or "no agents"
+    lines = [f"  crew: {ran}." + (f" Never started: {', '.join(c['never'])}." if c["never"] else "")]
+    n = sum(c["checks"].values())
+    if n:
+        kinds = ", ".join(f"{k} {v}" for k, v in sorted(c["checks"].items(), key=lambda kv: -kv[1]))
+        owed = [a for a in ("qa-reader", "edit-builder") if a in c["never"]]
+        lines.append(f"  the main session ran {n} checks itself ({kinds}) in {turns} turns."
+                     + (f" Sweeps belong to qa-reader and fix lists to edit-builder: {' and '.join(owed)} never ran." if owed else ""))
+    return lines
 
 
 def usd(models):
@@ -151,6 +210,8 @@ def show(s):
         print(f"  where it went: re-reading the conversation ${part('read'):.2f} ({part('read') / total:.0%}), new context ${part('write') + part('in'):.2f} "
               f"({(part('write') + part('in')) / total:.0%}), output and thinking ${part('out'):.2f} ({part('out') / total:.0%}). "
               f"The main session carried {mtok(context)} tokens of context a turn on average.")
+    if s.get("crew"):
+        print("\n".join(crew_lines(s["crew"], sum(r["messages"] for r in s["main"].values()))))
 
 
 def main():
@@ -166,7 +227,7 @@ def main():
             files = [p] + list((p.with_suffix("") / "subagents").glob("agent-*.jsonl"))
             return any(needle in f.read_text(errors="replace") for f in files if f.exists())
         logs = [p for p in logs if mentions(p)]
-    out = [session(p) for p in logs]
+    out = [session(p, with_crew=flag("crew")) for p in logs]
     if arg("since"):
         out = [s for s in out if (s["end"] or "") >= arg("since")]
     out.sort(key=lambda s: s["start"] or "", reverse=True)

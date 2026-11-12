@@ -20,7 +20,7 @@ import doc  # noqa: E402
 
 ffmpeg = pytest.mark.skipif(shutil.which("ffmpeg") is None, reason="needs ffmpeg")
 
-AGENTS = {"edit-critic": "claude-fable-5-2", "reference-analyst": "claude-fable-5-2", "fact-scout": "sonnet",
+AGENTS = {"edit-critic": "opus", "reference-analyst": "opus", "fact-scout": "sonnet",
           "edit-builder": "sonnet", "qa-reader": "haiku"}
 
 
@@ -45,9 +45,14 @@ def test_every_agent_has_its_model_and_is_named_by_the_director():
         assert f"`{name}`" in skill, f"the director's skill never mentions {name}"
 
 
-def test_the_creative_agents_run_on_fable_and_the_mechanical_ones_do_not():
-    # the owner, 2026-11-11: no compromise on the edit's quality. Judging and reference study stay on the best model.
-    assert AGENTS["edit-critic"] == AGENTS["reference-analyst"] == "claude-fable-5-2"
+def test_only_the_director_runs_on_fable_and_judging_never_drops_below_opus():
+    # the owner, 2026-11-12: Fable 5.2 directs, every helper runs on another model. Judging a render and studying a
+    # reference are taste, so they stay on Opus (2026-11-11: "no compromise on the edit's quality"); the mechanical
+    # helpers are the ones on Sonnet and Haiku.
+    assert AGENTS["edit-critic"] == AGENTS["reference-analyst"] == "opus"
+    assert "fable" not in " ".join(AGENTS.values())
+    skill = (ROOT / ".claude/skills/fable-director/SKILL.md").read_text()
+    assert "## Handing down is the default" in skill and "kit/cost.py --limit=1 --crew" in skill
     for name in ("edit-builder", "qa-reader"):
         tools = frontmatter(ROOT / f".claude/agents/{name}.md")["tools"]
         assert "WebSearch" not in tools and "Agent" not in tools
@@ -103,6 +108,36 @@ def test_cost_counts_a_message_once_and_prices_it(tmp_path):
     agent = s["subagents"][0]
     assert agent["agent"] == "qa-reader"
     assert agent["models"]["claude-haiku-5-5"]["usd"] == pytest.approx(200_000 * 0.10 * 5 / 1e6)   # over 100K: x5
+
+
+def tool_line(tid, name, **inp):
+    return json.dumps({"type": "assistant", "message": {"id": "m" + tid, "model": "claude-fable-5-2", "usage": {"output_tokens": 1},
+                                                        "content": [{"type": "tool_use", "id": tid, "name": name, "input": inp}]}})
+
+
+def test_crew_names_who_ran_who_never_did_and_the_checks_the_director_ran_itself(tmp_path):
+    agents = tmp_path / "agents"
+    agents.mkdir()
+    for name in ("edit-builder", "edit-critic", "qa-reader"):
+        (agents / f"{name}.md").write_text("---\n---\n")
+    log = tmp_path / "abc.jsonl"
+    log.write_text("\n".join([
+        tool_line("t1", "Agent", subagent_type="edit-critic", description="round 1"),
+        tool_line("t2", "Agent", subagent_type="edit-critic", description="round 2"),
+        tool_line("t2", "Agent", subagent_type="edit-critic", description="round 2"),                   # the same call, logged twice
+        tool_line("t3", "Bash", command="python3 kit/qa/digest.py -- node kit/qa/precheck.mjs hf/index.html"),
+        tool_line("t4", "Bash", command="python3 kit/hf/plan_check.py films/x/visual_plan.json && uv run python -m kit.film films/x joins"),
+        tool_line("t5", "Bash", command="ls films/x"),
+        tool_line("t6", "Read", file_path="kit/qa/qa.py"), "not json"]))
+    c = cost.crew(log, agents)
+    assert c["started"] == {"edit-critic": 2} and c["never"] == ["edit-builder", "qa-reader"]
+    assert c["checks"] == {"precheck": 1, "plan_check": 1, "joins": 1}
+    first, second = cost.crew_lines(c, turns=7)
+    assert first == "  crew: edit-critic 2. Never started: edit-builder, qa-reader."
+    assert second.startswith("  the main session ran 3 checks itself (") and "in 7 turns" in second
+    assert second.endswith("qa-reader and edit-builder never ran.")
+    quiet = cost.crew_lines({"started": {"qa-reader": 1}, "never": [], "checks": {}}, turns=3)
+    assert quiet == ["  crew: qa-reader 1."]
 
 
 def test_cost_reports_an_unknown_model_without_a_price(tmp_path):

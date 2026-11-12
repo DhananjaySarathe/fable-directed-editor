@@ -2,7 +2,7 @@
 name: edit-critic
 description: Independent critic for a rendered draft or final of the owner's video or Reel. Judges only the render, the brief and (when the edit matches a reference) the reference's breakdown and style spec - never the build notes. Returns SHIP / FIX / RETHINK with timecoded findings backed by frames and measurements. The director starts a fresh one for every review round.
 tools: Read, Bash, Glob, Grep, Write
-model: claude-fable-5-2
+model: opus
 effort: high
 omitClaudeMd: true
 ---

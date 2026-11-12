@@ -12,9 +12,10 @@ quote his feedback; read those lines as the reason behind a default, and follow 
 
 Load the `fable-director` skill first, then the look skill it points to. It sets:
 - **the roles:** the main session (Fable 5.2, high effort, set in `.claude/settings.json`) directs and designs
-  everything a viewer sees or hears. The agents in `.claude/agents/` do the rest: `reference-analyst` and `edit-critic`
-  on Fable 5.2, `fact-scout` and `edit-builder` on Sonnet 5.5, `qa-reader` on Haiku 5.5. Renders and grades are
-  background shell commands;
+  everything a viewer sees or hears, and is the only one on Fable. The agents in `.claude/agents/` do the rest:
+  `reference-analyst` and `edit-critic` on Opus 5.5, `fact-scout` and `edit-builder` on Sonnet 5.5, `qa-reader` on
+  Haiku 5.5. Check sweeps, fix lists and fact checks go to them by default, not to the director. Renders and grades
+  are background shell commands;
 - **the order of the run**, from intake to the delivered files and the cost line;
 - **how a reference video is matched:** measured first (`kit/refs/breakdown.py`), then compared with the draft
   (`kit/refs/compare.py`).
@@ -29,7 +30,7 @@ when the owner states a lasting preference, offer to write it there.
   generated (`final/` is what gets uploaded, `temp/` can be deleted any time), `broll/` is the reusable footage.
 - Long manuals are read by section: `python3 kit/doc.py kit/hf/README.md` lists the sections,
   `python3 kit/doc.py kit/hf/README.md "The lens"` prints one.
-- What an edit cost, per model: `uv run python kit/cost.py`.
+- What an edit cost, per model, and which helpers ran: `uv run python kit/cost.py --limit=1 --crew`.
 - Something a film needs that another film could reuse goes into `kit/` with a line in its README and a test, not
   into the film.
 - One heavy render or grade at a time on one Mac. Long jobs run in the background.
