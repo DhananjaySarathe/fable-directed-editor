@@ -28,23 +28,22 @@ One session, the director, runs the edit and hands the checkable work to five he
 
 ```mermaid
 flowchart TD
-    you(["You: a take, and what you want"]) --> dir["Director · Fable 5.2<br/>what to keep, the hook, the plan, every scene"]
-    dir -. "a reference was shared" .-> ra["reference-analyst · Opus 5.5<br/>measures its cuts, zooms, type and beat"]
-    dir -. "something is named on screen" .-> fs["fact-scout · Sonnet 5.5<br/>sources, real pages, logos"]
-    ra --> plan["The plan: what stays, 3 hooks scored, a scene for each idea"]
-    fs --> plan
-    dir --> plan
-    plan --> yes{"Your yes: the plan, or a 15 s sample"}
-    yes --> build["Director writes the scenes"]
-    build --> qa["qa-reader · Haiku 5.5<br/>runs the checks, returns only what failed"]
-    qa --> draft["1080p draft render · no model"]
-    draft --> critic["edit-critic · Opus 5.5<br/>fresh eyes: SHIP, FIX or RETHINK"]
-    critic -- "a matter of taste" --> build
-    critic -- "fixes with a right answer" --> eb["edit-builder · Sonnet 5.5<br/>applies the list, rebuilds, re-checks"]
-    eb --> draft
-    critic -- "SHIP" --> final["Final render · no model"]
-    final --> out(["output/final/: the video, captions, posting notes<br/>in chat: the bill per model"])
+    ra["<b>reference-analyst</b><br/>Opus 5.5<br/>measures your reference"] -.-> dir
+    you(["Your take<br/>and what you want"]) --> dir
+    fs["<b>fact-scout</b><br/>Sonnet 5.5<br/>sources, real pages, logos"] -.-> dir
+    dir["<b>Director</b><br/>Fable 5.2<br/>what stays, the hook,<br/>a scene for each idea"] --> yes{{"<b>Your yes</b><br/>the plan, or a 15 s sample"}}
+    yes --> BC
+    subgraph BC["Build and check"]
+        direction LR
+        build["<b>Director</b><br/>writes the scenes"] --> qa["<b>qa-reader</b><br/>Haiku 5.5<br/>runs the checks,<br/>returns what failed"] --> draft["<b>Draft render</b><br/>1080p, no model"]
+    end
+    BC --> critic["<b>edit-critic</b><br/>Opus 5.5<br/>fresh eyes:<br/>SHIP, FIX or RETHINK"]
+    critic -- "FIX" --> eb["<b>edit-builder</b><br/>Sonnet 5.5<br/>applies the fix list,<br/>rebuilds, re-checks"]
+    critic -- "SHIP" --> final(["<b>Final render</b><br/>no model<br/>video, captions, notes,<br/>the bill per model"])
 ```
+
+A FIX goes two ways: what is a matter of taste goes back to the director, what has a right answer goes to
+`edit-builder`. Either way a new draft follows, for at most three rounds.
 
 What happens at each step:
 
