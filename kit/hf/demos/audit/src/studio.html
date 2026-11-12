@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="auditstudio" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: repro of kit/refs/AUDIT_2026-10-20.md §3 on HF.studio (kit/hf/demos/audit/check.mjs reads window.__audit).
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["auditstudio"] = tl;                                        // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "auditstudio", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.5, chrome: { left: "fixture · audit", badge: "1080p" } });
+        const { C, layer, say, line, strike, chapter, beat } = S;
+        const A = (window.__audit = {});
+        // 0-6: the face in a card; the picture cuts at 4 s inside it (pieces 0-4 / 4-26 come from different source times)
+        beat(0, "beside");
+        { const L = layer(0.2, 6);
+          A.say = say(L, 0, 3, { x: 1000, y: 260, w: 820, size: 80 });
+          A.acc1 = line(L, "What is *HackerRank?*", 0.3, { x: 1000, y: 420, w: 820, size: 72 }).box;
+          A.acc2 = line(L, "*several words* here", 0.5, { x: 1000, y: 540, w: 820, size: 72 }).box;
+          A.strikeEnd = strike(S.FRONT, 1000, 600, 500, 2.0, null, C.acc, 5.0);       // has an end
+        }
+        A.strikeForever = strike(S.FRONT, 1000, 700, 420, 1.0, null, C.acc);           // no end and no layer: precheck "linger"
+        // 6-12: the face full frame, then a chapter card over it (its title sits where the face is)
+        beat(6, "hero");
+        chapter(9, 11.5, "01", "the chapter card", "over the full-frame face", 0);
+        // 12-18: a code window (its title bar is window chrome)
+        beat(12, "beside");
+        { const L = layer(12.2, 18);
+          HF.code(K, L, { x: 1000, y: 220, w: 820, h: 520, title: "solution.py", lang: "py", size: 34,
+            lines: ["def two_sum(nums, target):", "    seen = {}", "    for i, n in enumerate(nums):", "        if target - n in seen:", "            return seen[target - n], i", "        seen[n] = i"] }).show(12.4);
+        }
+        beat(18, "hero");
+        beat(22, "beside");
+        { const L = layer(22.2, D.total); line(L, "the *end", 22.4, { x: 1000, y: 420, w: 820, size: 90 }); }
+        S.box();
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

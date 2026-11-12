@@ -1,0 +1,30 @@
+{
+  "film": "kit-film-example", "ratio": "16:9", "preset": "preset_pastel_box", "total": 36, "schema": 2,
+  "note": "a check film for kit/film (ffmpeg test pattern + a synthetic voice), not an edit; times are on the cut (work/edl.json). Schema 2 since 2026-10-23 (v11 fix P-M4): the layouts spread so no one covers 35 %, one takeover (p5-p6), at most 3 groups up",
+  "passages": [
+    { "id": "p1", "t": [0, 2.1], "goal": "The stakes on frame 1: a film is three files", "type": "emphasis", "technique": "say",
+      "why": "the cold open's own words rise under the hero card", "beats": [{ "at": 0.0, "show": "the line rises" }], "box": { "show": "hero" },
+      "face": "on", "cam": "push", "groups": 1 },
+    { "id": "p2", "t": [2.1, 10.3], "goal": "Every film copied its own scripts", "type": "relationship", "technique": "sketch",
+      "why": "three films, each drawing an arrow to its own copy", "beats": [{ "at": 2.3, "show": "film 1" }, { "at": 6.5, "show": "2,000 lines" }], "box": { "show": "beside", "side": "right" },
+      "face": "on", "cam": "drift", "groups": 2, "transition": "card" },
+    { "id": "p3", "t": [10.3, 12.9], "goal": "The same bugs came back", "type": "story", "technique": "stickman", "fallback": "say",
+      "why": "the frustration, acted out", "beats": [{ "at": 11.0, "show": "hands on head, then a facepalm" }], "box": { "show": "aside", "side": "left" },
+      "face": "on", "cam": "hold", "groups": 2, "transition": "cut" },
+    { "id": "p4", "t": [12.9, 17.5], "goal": "A film is now three files", "type": "process", "technique": "ui.checklist",
+      "why": "each file ticks on its word; he goes up into the corner", "beats": [{ "at": 15.0, "show": "the cut list ticks" }], "box": { "show": "corner", "side": "left" },
+      "face": "corner", "groups": 2, "transition": "card" },
+    { "id": "p5", "t": [17.5, 23.0], "goal": "What the kit does with the cut", "type": "process", "technique": "flow",
+      "why": "one container through its states: cut list, frame grid, re-listened; he is off, the scene has the frame", "beats": [{ "at": 18.9, "show": "on the grid" }, { "at": 21.3, "show": "re-listened" }], "box": { "show": "graphic" },
+      "face": "off", "groups": 2, "transition": "zoom" },
+    { "id": "p6", "t": [23.0, 28.0], "goal": "Build, mix, render: one command each", "type": "instruction", "technique": "code", "fallback": "ui.note",
+      "why": "the real commands, lit on their words, the terminal across the frame (the takeover goes on)", "beats": [{ "at": 23.3, "show": "build" }, { "at": 24.6, "show": "mix" }, { "at": 26.6, "show": "render" }], "box": { "show": "graphic" },
+      "face": "off", "groups": 2 },
+    { "id": "p7", "t": [28.0, 32.3], "goal": "Reels from the finished film by whole sentences", "type": "structure", "technique": "ui.numbered",
+      "why": "two of the sentences Reel a takes, as numbered cards", "beats": [{ "at": 30.5, "show": "the cards land" }], "box": { "show": "aside", "side": "right" },
+      "face": "on", "cam": "pull", "groups": 3, "transition": "zoom" },
+    { "id": "p8", "t": [32.3, 35.9], "goal": "The verdict: nothing is copied", "type": "emphasis", "technique": "ui.stamp",
+      "why": "the verdict stamps over the face", "beats": [{ "at": 34.5, "show": "NOTHING COPIED" }], "box": { "show": "punch" },
+      "face": "full", "cam": "punch", "groups": 2, "transition": "cut" }
+  ]
+}

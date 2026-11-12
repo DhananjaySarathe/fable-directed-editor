@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="film" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#EEEAE3">
+      <video id="room" class="clip" src="assets/room.mp4" muted playsinline data-start="0" data-duration="__MEDIA__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // preset_canvas_studio scaffold (kit/presets/canvas_studio/README.md), copied from films/chakra-redline v4, the
+      // owner's approved sample. Keep the frame (HF.kit, HF.canvas, the stations, the speaker shapes, K.finish) and rewrite
+      // the scenes for the new take: every time is a word id (W(i) / WE(i)), never seconds. The blocks below are the
+      // worked recipes, in the order they played there (replace their copy, word ids, logos and facts):
+      //   1. hook macro: their real page in a turned window under a lens, a highlighter on the line, a pull back
+      //   2. evidence wall: three checked-fact cards (one dark), beams converging into his card on "connected"
+      //   3. hero: a takeover (C.takeover kind "type", kit/hf/trans.js): the camera dives through the dark card into giant
+      //      caps, a strike and a grey-out on the negating word; he is off for it and his card comes back on the cut
+      //   4. tree: one gradient card branching into three labels, each on its word
+      //   5. overview, then a chart: out to see two stations side by side, in to a locked card whose line lands on his last word
+      // He is never cut out: only his graded room (work/room.mp4) in a circle or a card that morphs between shots.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["film"] = tl;                                         // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "film", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const W = K.W, WE = K.WE, Q = K.Q, T = D.total, el = K.el;
+        const S1 = [2880, 1620], S2 = [4800, 1620], S4 = [2880, 2700], S5 = [4800, 2700];   // camera stations (world px)
+        const world = (st, x, y) => [st[0] - 960 + x, st[1] - 540 + y];              // a station's screen px -> world px
+        const WX = 130, WY = 160, WW = 1100, WH = 640;                                 // their homepage window at S1 (left edge ~100 px once turned)
+        const [mx, my] = world(S1, WX + 550, WY + 54 + 320);                           // frame 1: the macro on their line
+        const C = HF.canvas(K, ROOT, { w: 5760, h: 3780, x: mx, y: my, z: 2.5 });
+        const J1 = D.pieces[1].out_a;                                                  // the first join (a pause trim)
+        const B3 = W(484) - 0.25, B4 = W(491) - 0.1, B5 = W(520) - 0.15;             // "just", the second "DSA", "After"
+        const BV = B5 + 0.6, BI = BV + 0.25;                                           // the overview (B5..BI), then into the chart
+        const F1 = C.station(0, J1 + 0.6, "mid", S1), F2 = C.station(J1 - 0.05, B3 + 0.05, "mid", S2);
+        const F4 = C.station(B4 - 0.05, BI + 0.6, "mid", S4), F5 = C.station(B5 - 0.05, T + 0.5, "mid", S5);
+
+        // ---------------------------------------------------------------- 1. the hook: macro on their own homepage
+        const win = C.window(F1, WX, WY, WW, WH, { img: "assets/hr_hero.png", url: "hackerrank.com", pos: "center top", ry: -10, rx: 14 });
+        C.highlight(win.body, [365, 320, 377, 50], 0.55, { dur: 0.6 });
+        C.dof(0, 2.2, { fade: [1.35, 0.5], blur: 6 });                                  // a macro lens until the pull back
+        tl.fromTo(win, { rotateY: -10, rotateX: 14 }, { rotateY: 9, rotateX: 3, duration: 1.2, ease: HF.E.move, immediateRender: false }, Q(1.45));
+        tl.to(win, { rotateY: 7, duration: J1 - 2.65, ease: "sine.inOut", immediateRender: false }, Q(2.65));
+        C.hold(0, 1.45, 0.12);                                                         // a slow push into the line
+        C.cam(1.45, { x: S1[0], y: S1[1], z: 1 }, { dur: 1.2, ease: HF.E.move, whoosh: "whoosh/whoosh__cinematic-wind-swoosh__mixkit-1471", db: -22 });
+        C.hold(2.65, J1, 0.035);
+        C.chip(F1, WX + 40, WY + WH + 26, `<img src="assets/hackerrank_logo.png" style="height:30px"> <span style="color:#8a8a94">· their homepage, today</span>`, 2.75);
+
+        // ---------------------------------------------------------------- 2. the clues: an evidence wall, beams into him
+        C.cam(J1, { x: S2[0], y: S2[1], z: 1 }, { dur: 0.55, ease: "expo.inOut", whoosh: "whoosh/whoosh__fast-whoosh-transition__mixkit-1490", db: -19 });
+        C.hold(J1 + 0.55, B3 - 0.4, 0.04);
+        // three cards 640 x 230, 70 px apart, 96+ px from the frame's edges once turned and pushed
+        const clue = (x, y, t, html) => C.card(F2, x, y, 640, 230, t, { html, ry: 12, rx: 2, hold: 6, drift: 1.2 });
+        // checked 2026-10-20: HackerRank's Chakra (real code tasks, an AI assistant) went live on Oct 5; Google is piloting an
+        // AI-assisted coding round (reported May 2026); Meta has had an AI-enabled coding round since Oct 2025
+        const src = (t, c) => `<div class="cv-s" style="font-size:32px;margin-top:12px;color:${c || "#6b6b75"}">${t}</div>`;
+        const c1 = clue(150, 112, J1 + 0.1, `<div style="padding:30px 40px"><img src="assets/hackerrank_logo.png" style="height:44px;display:block"><div class="cv-t" style="font-size:42px;margin-top:20px;line-height:1.06">real code, <span style="background:${C.GRAD};-webkit-background-clip:text;color:transparent">AI allowed</span></div>${src("Chakra · live since Oct 5")}</div>`);
+        const c2 = clue(370, 412, W(475) - 0.1, `<div style="padding:30px 40px"><img src="assets/google.png" style="height:44px;display:block"><div class="cv-t" style="font-size:42px;margin-top:20px;line-height:1.06">AI in a coding round</div>${src("pilot · May 2026")}</div>`);
+        const c3 = clue(150, 712, W(477) - 0.1, `<div style="position:absolute;inset:0;border-radius:28px;background:#16161C"></div><div style="position:relative;padding:30px 40px"><div class="cv-t" style="font-size:40px;line-height:1.1;color:#fff">Meta</div><div class="cv-t" style="font-size:42px;margin-top:16px;line-height:1.06;color:#fff">AI-enabled coding round</div>${src("since Oct 2025", "rgba(255,255,255,.72)")}</div>`);
+        // "clues connected": one beam from each card's right edge into his card, converging on him
+        [[790, 227], [1010, 527], [790, 827]].forEach(([x, y], i) => {
+          const t = W(481) - 0.05 + i * 0.15;
+          C.beam(F2, [[x - 12, y], [1322, 470 + i * 70]], t, { dur: 0.45, w: 12, glow: 10, curve: 0.5, dot: true, sfx: i ? false : undefined });
+          tl.to([c1, c2, c3][i], { boxShadow: "0 0 0 2px rgba(108,92,231,.55), 0 0 44px 4px rgba(255,77,109,.22), 0 30px 70px rgba(30,30,60,.14)", duration: 0.3, immediateRender: false }, Q(t + 0.35));
+        });
+
+        // ---------------------------------------------------------------- 3. the hero: a takeover, dived into from the dark card
+        // (2026-10-22, kit v11: was a hand-built HERO plate, copy-pasted into every canvas film; C.takeover kind "type" is that
+        // block: the plate in the look's paper, the type sized to the width, one mark, him off and back on the cut). A real
+        // takeover is 4-12 s on his continuing voice (kit/refs/SCENES.md §9): give it the passage that shows the thing.
+        C.cam(B3 + 0.01, { x: S4[0], y: S4[1], z: 1 }, { dur: 0.01, sfx: false });             // moved under the plate (not a transition)
+        C.takeover(B3, B4, { kind: "type", in: "zoom", from: c3, text: "GRINDING DSA", size: 282, out: "cut",
+          mark: { word: 0, t: W(487), kind: "strike", sfx: "impact/impact__short-bass-hit__mixkit-2299", db: -11 } });   // the negating word
+        HF.quiet(W(486), WE(490) + 0.25, { depth: -10 });
+
+        // ---------------------------------------------------------------- 4. the tree: one card, three branches
+        C.hold(B4, B5 - 0.2, 0.03);
+        C.card(F4, 690, 300, 380, 460, B4 + 0.15, { ry: -8, html: `<div style="position:absolute;inset:0;border-radius:28px;background:linear-gradient(150deg,${C.G.a} 0%,${C.G.b} 100%)"></div>
+          <div class="cv-big" style="position:absolute;left:38px;top:40px;font-size:150px;color:#fff">DSA</div>
+          <div class="cv-s" style="position:absolute;left:40px;top:318px;width:310px;font-size:37px;color:rgba(255,255,255,.94);line-height:1.15">what it’s still for</div>` });
+        const branch = (y, text, t) => {
+          const ax = 1070, ay = 530, bx = 1160, by = y;
+          const s = document.createElementNS("http://www.w3.org/2000/svg", "svg"); s.setAttribute("width", 1920); s.setAttribute("height", 1080);
+          s.style.cssText = "position:absolute;left:0;top:0;overflow:visible"; s.dataset.decor = "1";
+          s.innerHTML = `<path d="M${ax} ${ay} C ${ax + 90} ${ay}, ${bx - 90} ${by}, ${bx} ${by}" fill="none" stroke="#16161C" stroke-width="4" stroke-linecap="round"/><circle cx="${bx}" cy="${by}" r="9" fill="#16161C"/>`;
+          F4.append(s);
+          const p = s.querySelector("path"), dot = s.querySelector("circle");
+          p.style.strokeDasharray = "600 600"; p.style.strokeDashoffset = 600; dot.style.opacity = 0;
+          tl.to(p, { strokeDashoffset: 0, duration: 0.45, ease: HF.E.move, immediateRender: false }, Q(t - 0.35));
+          tl.to(dot, { opacity: 1, duration: 0.1, immediateRender: false }, Q(t - 0.02));
+          const lab = el(F4, `left:${bx + 26}px;top:${by - 30}px;font-size:50px;white-space:nowrap`, HF.esc(text), "hf-abs cv-t");
+          lab.style.visibility = "hidden"; tl.set(lab, { visibility: "visible" }, Q(t));
+          tl.fromTo(lab, { x: -30, opacity: 0, filter: "blur(8px)" }, { x: 0, opacity: 1, filter: "blur(0px)", duration: 0.5, ease: HF.E.in, immediateRender: false }, Q(t));
+          K.sfx("pop", t + 0.05, -25);
+          return lab;
+        };
+        branch(330, "sharpen your mind", W(497));
+        branch(530, "brush up concepts", W(501));
+        branch(730, "think in systems", W(514));
+        const ul = el(F4, `left:1186px;top:762px;width:400px;height:8px;border-radius:4px;background:${C.GRAD};transform-origin:0 50%`);
+        ul.dataset.decor = "1";
+        tl.fromTo(ul, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: HF.E.in, immediateRender: true }, Q(W(518)));
+
+        // ---------------------------------------------------------------- 5. his bet, on a locked 3D chart
+        // the overview: out until the tree and the chart sit side by side on one canvas, a beat, then into the chart
+        C.cam(B5, { x: (S4[0] + S5[0]) / 2, y: S4[1], z: 0.48 }, { dur: 0.6, ease: "power3.inOut", whoosh: "whoosh/whoosh__fast-transitions-swoosh__mixkit-3115", db: -20 });
+        C.cam(BI, { x: S5[0], y: S5[1], z: 1 }, { dur: 0.6, ease: "expo.inOut", whoosh: "whoosh/whoosh__fast-whoosh-transition__mixkit-1490", db: -21 });
+        const pb = el(F5, `left:${96 - 30}px;top:${150 + 34}px;width:1000px;height:700px;border-radius:28px;background:${C.PAPER.pastel.peach}`);   // a block behind the card
+        pb.dataset.decor = "1"; pb.style.visibility = "hidden"; tl.set(pb, { visibility: "visible" }, Q(BV + 0.6));
+        tl.fromTo(pb, { opacity: 0, x: 30, y: -34 }, { opacity: 1, x: 0, y: 0, duration: 0.6, ease: HF.E.in, immediateRender: false }, Q(BV + 0.6));
+        const panel = C.card(F5, 96, 150, 1000, 700, B5 + 0.05, { ry: 5, rx: 1.5, drift: false, fromRy: -14, fromZ: -260, html: `
+          <div style="position:absolute;left:44px;top:40px;display:flex;align-items:center;gap:18px"><div style="background:#373737;border-radius:14px;padding:8px 14px"><img src="assets/leetcode_logo.png" style="height:56px;display:block"></div>
+          <div class="cv-t" style="font-size:44px">how much grinding counts</div></div>
+          <div class="cv-s" style="position:absolute;left:60px;top:598px;font-size:36px;color:#5f5f6a">now</div>
+          <div class="cv-s" style="position:absolute;left:640px;top:598px;width:260px;text-align:right;font-size:36px;color:#16161C">in 6 months</div>` });
+        panel.style.transformOrigin = "0% 50%";                                        // the push: the card grows from its left edge, away from him
+        tl.to(panel, { scale: 1.04, duration: T - (BV + 1.3), ease: "sine.inOut", immediateRender: false }, Q(BV + 1.3));
+        // never an empty plate: the flat "now" draws as the card lands and creeps on through "discussing the...", the fall
+        // starts on "lead code" and lands on "six months"
+        C.chart(panel, 60, 170, 840, 400, { pts: [[0, 0.84], [0.5, 0.82], [0.62, 0.72], [0.76, 0.52], [0.88, 0.3], [1, 0.15]],
+          keys: [{ t: BV + 0.9, u: 0.3, dur: 1.2, ease: "sine.inOut" }, { t: W(525), u: 0.5, dur: 1.6, ease: "sine.inOut" },
+            { t: W(527), u: 0.9, dur: 2.2, ease: "power2.inOut" }, { t: W(541) - 0.12, u: 1, dur: 0.38, ease: "power2.out" }],
+          land: W(541) + 0.26, sfxAt: W(527) });
+        C.chip(panel, 746, 286, `<span style="width:12px;height:12px;border-radius:50%;background:${C.G.b};display:inline-block"></span> my bet`, W(541) + 0.3);
+
+        // ---------------------------------------------------------------- him: always in a closed shape, his real room inside
+        // (the owner: "either in a circle or in a square box ... do not remove the person"); shapes morph under the moves
+        const P2 = D.pieces[2].out_a;
+        C.speaker("room", [
+          { t: 0, mode: "card", x: 1700, y: 870, w: 260, h: 260, r: 130 },                                     // his face from frame 1
+          { t: 1.45, mode: "card", x: 1560, y: 560, w: 520, h: 520, r: 260, dur: 0.8, ease: HF.E.move, sfx: false },   // grows with the pull back
+          { t: J1, mode: "card", x: 1570, y: 540, w: 480, h: 680, r: 36, dur: 0.55, ease: "expo.inOut", sfx: false },  // a card, under the whip
+          // (the hero takeover takes him off at B3; this shot at B4 is his return, on the cut)
+          { t: B4, mode: "card", x: 360, y: 540, w: 480, h: 640, r: 36, cut: true },
+          { t: B5, mode: "card", x: 1720, y: 900, w: 280, h: 280, r: 140, dur: 0.6, ease: HF.E.move, sfx: false },   // small in the corner for the overview
+          { t: BI, mode: "card", x: 1520, y: 560, w: 540, h: 540, r: 270, s: 0.625, dur: 0.6, ease: "expo.inOut", sfx: false },
+          { t: P2, mode: "card", x: 1520, y: 560, w: 540, h: 540, r: 270, s: 0.7, cut: true },                       // a punch-in hides the jump cut
+        ], { src: [1920, 1080], at: [1010, 500], head: 300, back: [30, 30, "lilac"] });
+
+        K.finish(T);
+      })();
+    </script>
+  </body>
+</html>

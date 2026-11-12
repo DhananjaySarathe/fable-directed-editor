@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="evdemo" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: a made-up 22 s check of kit/hf/evidence.js on the pastel-box frame (the camera is a test pattern, the
+      // words are typed in build.py). It is a test page for precheck/qa, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["evdemo"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "evdemo", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.5, chrome: { left: "fixture · evidence check", badge: "1080p" },
+          sections: [[0, "a · native size"], [6, "b · focus"], [14, "c · scoreboard"]] });
+        const { C, el, layer, land, card, say, line, beat } = S;
+        const slack = (L) => {                     // the long-form baseline's Slack card, at its native size
+          const c = card(L, 560, 300, 800, 300, "", "");
+          el(c, "left:0;top:0;right:0;height:50px", "<i></i><i></i><i></i><b>acme · dev</b>", "tbar");
+          const rows = el(c, "left:30px;top:76px;right:30px", "", "hf-abs");
+          const row = (who, txt) => { const r = document.createElement("div"); r.style.cssText = "display:flex;gap:14px;padding:8px 10px;margin-bottom:6px";
+            r.innerHTML = `<div class="av" style="background:#0f9d8a">${who[0]}</div><div><div class="who">${who}<small>now</small></div><div class="txt">${txt}</div></div>`; rows.append(r); return r; };
+          row("QA Tester", '<span class="mention">@Alex</span> 3 new bugs in the sheet');
+          const hit = row("Agent", "fixing all the bugs… bug 1 fixed ✓");
+          return { c, hit };
+        };
+        // a: the baseline at native size (precheck should call its text small)
+        beat(0, "graphic", { tag: "a" });
+        { const L = layer(0.2, 6); const s = slack(L); land(s.c, 0.4); }
+        // a quick 12-word line that leaves too soon (precheck "read")
+        { const L = layer(4.2, 5.4, S.FRONT); line(L, "this line has twelve words and it leaves the screen far too soon", 4.3, { x: 160, y: 820, size: 54 }); }
+        // b: the same card, zoomed to the line being talked about (S.focus), the line highlighted, a pointer leads in
+        beat(6, "graphic", { tag: "b" });
+        { const L = layer(6.2, 14); const s = slack(L); land(s.c, 6.3);
+          S.focus(L, s.c, { at: 8.0, until: 13.2, line: s.hit, click: { from: [1500, 900], u: 0.4, v: 0.8 } }); }
+        // c: a running comparison; the reveal lands on the voice alone (S.quiet)
+        beat(14, "graphic", { tag: "c" });
+        { const L = layer(14.2, D.total);
+          line(L, "same prompt, two *models", 14.3, { x: 330, y: 170, size: 84 });
+          const sb = S.scoreboard(L, 330, 330, 1260, { title: "cost of one edit", rows: [{ name: "Haiku 5.5", color: "#0f9d8a", sub: "fixture" }, { name: "Opus 5.5", color: C.acc, sub: "fixture" }], at: 14.6,
+            fmt: (v) => "$" + v.toFixed(2) });
+          sb.set(0, 0.9, 16.0); sb.set(1, 16, 18.0); sb.win(0, 19.6);
+          S.quiet(17.9, 19.4); }
+        S.box({});
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

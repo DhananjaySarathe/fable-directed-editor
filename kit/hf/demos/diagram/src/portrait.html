@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="dgport" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920"
+      style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#fff"></div>
+    <script>
+      // FIXTURE (a check page; made-up copy): the flat diagram in 9:16, a column of four in a Reel's safe band
+      // (y 270..1250, kit/hf/reel.js), its tags inline, the way back on the right; 0-8 s.
+      (function () {
+        HF.look("whitespace");
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = { dgport: tl };
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "dgport", width: 1080, height: 1920, words: [], pieces: [] });
+        const band = K.el(ROOT, "left:0;top:270px;width:1080px;height:980px;outline:2px dashed rgba(14,14,18,.06)");
+        const dg = HF.diagram(K, band, { w: 1080, h: 980, title: "the loop", type: "loop", layout: "column",
+          nodes: [{ id: "build", label: "Build", sub: "the page" }, { id: "draft", label: "Draft", sub: "1080p", mono: true },
+            { id: "critic", label: "Critic", sub: "every frame", focal: true }, { id: "ship", label: "Ship", sub: "4K" , mono: true }],
+          edges: [["build", "draft"], ["draft", "critic"], ["critic", "ship"], { from: "critic", to: "build", label: "fix it", accent: true }] });
+        dg.show(0, null).reveal("build", 0.3).reveal("draft", 0.8).reveal("critic", 1.3).reveal("ship", 1.8);
+        dg.connect("build", "draft", 0.6).connect("draft", "critic", 1.1).connect("critic", "ship", 1.6).connect("critic", "build", 2.3, 0.9);
+        dg.flow([["build", "draft"], ["draft", "critic"], ["critic", "build"]], 3.4, { period: 3.4 });
+        K.finish(__TOTAL__);
+        window.__seek = async (t) => { tl.seek(t, false); };
+      })();
+    </script>
+  </body>
+</html>

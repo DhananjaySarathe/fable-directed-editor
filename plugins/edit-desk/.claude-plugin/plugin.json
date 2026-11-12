@@ -1,0 +1,9 @@
+{
+  "name": "edit-desk",
+  "version": "1.2.0",
+  "description": "Video-edit guardrails, render/QA alerts, a QA gate on delivery, per-video cost, and a live desk above the prompt",
+  "author": {
+    "name": "Your Name"
+  },
+  "types": "./types/index.d.ts"
+}

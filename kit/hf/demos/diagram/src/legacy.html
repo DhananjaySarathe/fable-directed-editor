@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="dglegacy" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080"
+      style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f3eee6"></div>
+    <script>
+      // FIXTURE (a check page): the old styles on their old look (D.look; paper_studio by default), drawn as old films
+      // call them (top) and with v11's two opt-in fixes (bottom: margin 120, ports "fan"). The top halves are what
+      // films/expensewaale's two diagrams pass (a circle row with a way back, pad 0.1; cards at explicit x/y): they must
+      // draw exactly what the kit before v11 drew (the pixel diff in the engine-adopt evidence).
+      const D = /*DATA*/;
+      (function () {
+        HF.look(D.look || "paper_studio");
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = { dglegacy: tl };
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "dglegacy", width: 1920, height: 1080, words: [], pieces: [] });
+        const rowNodes = () => [{ id: "read", label: "Read", sub: "the whole codebase", icon: "search" }, { id: "plan", label: "Plan", sub: "a proper plan", icon: "map" },
+          { id: "skill", label: "Design skill", sub: "already in the repo", icon: "layers" }, { id: "edit", label: "Edit", sub: "file by file", icon: "code" },
+          { id: "check", label: "Check", sub: "build, test, fix", icon: "eye" }];
+        const rowEdges = [["read", "plan"], ["plan", "skill"], ["skill", "edit"], ["edit", "check"], ["check", "edit", 0.55]];
+        const fix = (o) => (D.fixed ? Object.assign(o, { margin: 120, ports: "fan" }) : o);
+        // ---- 0-5: the circle row (expensewaale "How Extra-high worked", its own sizes)
+        {
+          const L = K.el(ROOT, "left:0;top:0;width:1920px;height:1080px"); K.show(L, 0, 5);
+          const dg = HF.diagram(K, L, fix({ x: 40, y: 60, w: 1480, h: 860, title: "How Extra-high worked", titleY: 150, labelSize: 52, pad: 0.1, steps: false, nodes: rowNodes(), edges: rowEdges }));
+          dg.show(0, 5).reveal("read", 0.2).reveal("plan", 0.5).connect("read", "plan", 0.55).reveal("skill", 0.8).connect("plan", "skill", 0.85);
+          dg.reveal("edit", 1.1).connect("skill", "edit", 1.15).reveal("check", 1.4).connect("edit", "check", 1.45).connect("check", "edit", 1.8);
+          dg.flow("check", "edit", 2.3, { dur: 0.9, dots: 3 }); dg.highlight("check", 2.6, 4.8);
+          dg.done(["read", "plan"], 3.0).note("edit", 3.3, "file by file", 4.8).focus(["edit", "check"], 3.6, { zoom: 1.5 }).overview(4.4);
+        }
+        // ---- 5-10: the card hub (expensewaale "One task, a whole team")
+        {
+          const L = K.el(ROOT, "left:0;top:0;width:1920px;height:1080px"); K.show(L, 5, 10);
+          const dg = HF.diagram(K, L, fix({ x: 40, y: 40, w: 1460, h: 900, title: "One task, a whole team", titleY: 120, shape: "card", cardW: 330, cardH: 124,
+            nodes: [{ id: "main", label: "Main agent", sub: "the lead", icon: "cpu", x: 330, y: 500 }, { id: "design", label: "Design", sub: "helpers", icon: "layers", x: 1060, y: 270 },
+              { id: "build", label: "Build", sub: "helpers", icon: "code", x: 1060, y: 500 }, { id: "review", label: "Review", sub: "helpers", icon: "eye", x: 1060, y: 730 }],
+            edges: [["main", "design"], ["main", "build"], ["main", "review"], ["review", "main"]] }));
+          dg.show(5, 10).reveal("main", 5.2).reveal(["design", "build", "review"], 5.6, 0.25).connect("main", "design", 5.9).connect("main", "build", 6.1).connect("main", "review", 6.3).connect("review", "main", 6.6);
+          dg.flow("main", "design", 7, { dur: 0.9, dots: 3 }); dg.highlight("design", 7.2, 9.6);
+          dg.focus("design", 8.0, { zoom: 1.5 }).done("build", 8.4).overview(9.0);
+        }
+        K.finish(__TOTAL__);
+        window.__seek = async (t) => { tl.seek(t, false); };
+      })();
+    </script>
+  </body>
+</html>

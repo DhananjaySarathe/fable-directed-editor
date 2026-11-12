@@ -1,0 +1,10 @@
+# build outputs (python3 build.py regenerates them); media is ignored by the root .gitignore
+assets/
+vendor/
+index.html
+cues.json
+work/
+snapshots/
+renders/
+hyperframes.json
+box_log.json

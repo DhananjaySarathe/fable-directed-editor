@@ -1,0 +1,23 @@
+{
+  "film": "fixture-audit", "ratio": "16:9", "preset": "preset_pastel_box", "total": 60,
+  "passages": [
+    { "id": "p1", "music": "drop", "t": [0, 6], "goal": "The stakes on frame 1", "type": "emphasis", "technique": "kinetic",
+      "why": "the claim slams on its words", "beats": [{ "at": 0.3, "show": "the claim" }], "box": { "show": "hero" } },
+    { "id": "p2", "t": [6, 14], "goal": "See the PR that changed it", "type": "proof", "technique": "ui.pr",
+      "why": "the real artefact, not a claim", "beats": [{ "at": 6.4, "show": "the PR card lands" }], "box": { "show": "beside", "side": "right" } },
+    { "id": "p3", "t": [14, 22], "goal": "Read the one line that matters", "type": "proof", "technique": "focus",
+      "why": "zoom to the line being read", "beats": [{ "at": 15, "show": "focus the line" }], "box": { "show": "aside", "side": "left" } },
+    { "id": "p4", "t": [22, 30], "goal": "Old way vs new way", "type": "comparison", "technique": "scoreboard",
+      "why": "both results stay on screen", "beats": [{ "at": 23, "show": "rows fill" }], "box": { "show": "graphic" } },
+    { "id": "p5", "t": [30, 36], "goal": "How it flows", "type": "process", "technique": "flow",
+      "why": "one container through its states", "beats": [{ "at": 31, "show": "prompt -> running -> result" }], "box": { "show": "beside", "side": "left" } },
+    { "id": "p6", "music": "stop", "t": [36, 41], "goal": "The feeling", "type": "story", "technique": "stickman", "fallback": "say",
+      "why": "a human beat, acted out", "beats": [{ "at": 37, "show": "facepalm" }], "box": { "show": "face" } },
+    { "id": "p7", "t": [41, 48], "goal": "How far it fell", "type": "quantity", "technique": "sketch",
+      "why": "a hand-drawn line that draws itself", "beats": [{ "at": 42, "show": "the line draws" }], "box": { "show": "aside", "side": "right" } },
+    { "id": "p8", "music": "riser", "t": [48, 54], "goal": "The steps", "type": "process", "technique": "ui.checklist",
+      "why": "ticks land on the words", "beats": [{ "at": 49, "show": "three ticks" }], "box": { "show": "beside", "side": "right" } },
+    { "id": "p9", "music": "drop", "t": [54, 60], "goal": "The verdict", "type": "emphasis", "technique": "ui.stamp",
+      "why": "the verdict stamps", "beats": [{ "at": 55, "show": "stamp" }], "box": { "show": "punch" } }
+  ]
+}

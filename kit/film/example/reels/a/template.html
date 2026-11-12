@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="filmexamplea" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920" style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#f6f1ec">
+      <!-- the Reel's picture: the film's own track over its sentences (kit/film/reels.py), 16:9 -->
+      <video id="aroll" class="clip" src="assets/aroll.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // kit/film example, Reel a (a check Reel; film.py REELS["a"]): "a film is three files, the kit does the rest", a
+      // story on its own. Word ids are the film's; W(id) is the word's start on this Reel.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["filmexamplea"] = tl;                                     // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "filmexamplea", width: 1080, height: 1920, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.reel(K, ROOT, st, { end: D.total, talk: D.talk, faces: D.faces, src: [1920, 1080], label: "kit/film · reel a" });
+        const { C, layer, say, line, beat, ui, FRONT } = S;
+        const W = K.W;
+        const T2 = W(47) - 0.05, T3 = W(60) - 0.05, T4 = W(65) - 0.05, T5 = W(73) - 0.05;
+
+        // 0-1.8 the stakes on frame 1: the line over the hero card
+        beat(0, "hero");
+        { const L = layer(0, T2 - 0.1);
+          say(L, 41, 46, { x: 60, y: 290, w: 960, size: 104, stress: [45, 46] }); }
+
+        // 1.8-4.6 the three files, each card on its word (his card at the bottom)
+        beat(T2 - 0.05, "beside", { side: "top" });
+        { const L = layer(T2, T3 - 0.1, S.BACK, { read: true });
+          ui.checklist(L, 60, 290, 960, { title: "a film now", items: ["the cut list", "the scene plan", "the template"],
+            at: T2 + 0.05, per: 0.12, done: { 0: W(48), 1: W(51), 2: W(55) }, size: 44 }); }
+
+        // 4.6-5.8 the kit does the rest: his face full frame, the line on top
+        beat(T3 - 0.05, "punch");
+        { const L = layer(T3, T4 - 0.1, FRONT);
+          say(L, 60, 64, { x: 60, y: 290, w: 960, size: 100, color: "#fff", shadow: true, stress: [64] }); }
+
+        // 5.8-8.0 the frame grid: a hand-drawn timeline whose cut snaps to a frame line
+        beat(T4 - 0.05, "graphic");
+        { const L = layer(T4, T5 - 0.1);
+          const sk = HF.sketch(K, L, { x: 60, y: 300, w: 960, h: 620, seed: 11 });
+          sk.node("cut", { x: 480, y: 120, w: 420, h: 120, label: "your cut", fill: C.accTint });
+          sk.node("grid", { x: 480, y: 470, w: 760, h: 150, label: "frame grid" });
+          sk.arrow("snap", "cut", "grid", { bend: 0.15 });
+          sk.draw(["cut", "snap", "grid"], T4 + 0.02, { stagger: 0.15 }); }
+
+        // 8.0-10.5 every join re-listened, and the stamp on "again" (his card small at the bottom)
+        beat(T5 - 0.05, "aside", { side: "top" });
+        { const L = layer(T5, D.total);
+          const row = (txt, col) => `<div style="position:absolute;left:44px;top:56px;font:800 54px/1.15 ${HF.F.body};color:${col}">${txt}</div>`;
+          S.flow(L, { states: [
+            { at: T5 + 0.05, x: 60, y: 300, w: 960, h: 190, html: row("every join", C.ink) },
+            { at: W(77), x: 60, y: 300, w: 960, h: 190, html: row("✓ re-listened", C.ok) },
+          ], until: D.total });
+          ui.stamp("AGAIN", 380, 560, W(79), { size: 96, out: D.total - 0.1 }); }
+
+        // captions: the words no graphic shows, out of the way of each layout
+        const capY = (a) => (a < T2 ? 1110 : a < T3 ? 900 : a < T4 ? 1110 : a < T5 ? 1020 : 860);
+        S.box({ box: { src: [1920, 1080] } });
+        S.captions({ max: 3, y: capY, breaks: [T2, T3, T4, T5] });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

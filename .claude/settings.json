@@ -1,0 +1,25 @@
+{
+  "model": "claude-fable-5-2",
+  "modelSettings": {
+    "claude-fable-5-2": {
+      "effortLevel": "high"
+    }
+  },
+  "env": {
+    "HYPERFRAMES_NO_UPDATE_CHECK": "1"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ \"$CLAUDE_CODE_REMOTE\" = \"true\" ] || exit 0; \"$CLAUDE_PROJECT_DIR\"/cloud-setup.sh >/tmp/cloud-setup.log 2>&1 || echo 'cloud-setup.sh failed, see /tmp/cloud-setup.log'",
+            "timeout": 900
+          }
+        ]
+      }
+    ]
+  }
+}

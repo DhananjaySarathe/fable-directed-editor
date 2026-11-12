@@ -1,0 +1,14 @@
+{
+  "name": "video-shorts",
+  "description": "Claude Code plugins for the Fable-Directed Editor editing repo",
+  "owner": {
+    "name": "Your Name"
+  },
+  "plugins": [
+    {
+      "name": "edit-desk",
+      "source": "./plugins/edit-desk",
+      "description": "Video-edit guardrails, render/QA alerts, a QA gate on delivery, per-video cost, and a live desk above the prompt"
+    }
+  ]
+}

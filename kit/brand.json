@@ -1,0 +1,9 @@
+{
+  "youtube": "@yourchannel",
+  "youtube_url": "https://www.youtube.com/@yourchannel",
+  "instagram": "@yourhandle",
+  "instagram_url": "https://www.instagram.com/yourhandle/",
+  "end_card": ["YouTube @yourchannel", "Instagram @yourhandle"],
+  "x": "@yourhandle",
+  "x_note": "X is for posting only: the X handle never goes on a video end card or in YouTube/Instagram notes"
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="motion" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (kit/hf/demos/motion/build.py): the 2026-10-20 motion additions in one look (D.look). 0-4 s kinetic
+      // "cascade", 4-8 s kinetic "focus", 8-12 s an icon morph (x -> check) and a "no" shake on a card, 12-20 s the four
+      // living backgrounds (HF.shaderBg). Made-up lines.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["motion"] = tl;                                            // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "motion", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.3, palette: D.look === "night" ? HF.night.PALETTE : undefined,
+          chrome: { left: "fixture · motion · " + D.look, badge: "1080p" } });
+        if (D.look === "night") HF.night(S, st, { cut: null, left: "fixture · motion · night" });
+        if (D.look === "redline") HF.redline(S, st, {});
+        S.beat(0, "graphic");
+        st.cam.style.display = "none";
+        const C = HF.C;
+        { const L = S.layer(0.1, 3.9, S.BACK, { read: true });
+          HF.kinetic(K, L, { text: "Agents do the *boring* part", at: 0.4, style: "cascade", y: 420, size: 120 });
+          ["bot", "brain-circuit", "git-pull-request", "rocket"].forEach((n, i) => HF.drawIcon(K, L, n, 1.2 + 0.25 * i, { x: 640 + 170 * i, y: 640, size: 120, color: i === 3 ? C.acc : C.ink })); }
+        { const L = S.layer(4.1, 7.9, S.BACK, { read: true });
+          HF.kinetic(K, L, { text: "Same model. | *Different* limits.", at: 4.4, style: "focus", y: 360, size: 120, per: 0.12 }); }
+        { const L = S.layer(8.1, 11.9, S.BACK, { read: true });
+          const card = S.card(L, 560, 300, 800, 420);
+          S.mono(card, 60, 50, "THE TEST", `font-size:24px;color:${C.sub}`);
+          HF.morph(K, card, ["x", "check"], [10.2], { x: 300, y: 130, size: 200, color: C.bad, colors: [C.bad, C.ok], at: 8.4 });
+          HF.shake(K, card, 9.0, { strength: 16 }); }
+        // 12-20 s: the four living backgrounds (HF.shaderBg), each under one line
+        [["grain", "a premium stage"], ["mesh", "a calm world"], ["rays", "the payoff"], ["warp", "an intro world"]].forEach(([kind, txt], i) => {
+          const a = 12 + 2 * i, L = S.layer(a, a + 2, S.BACK, { read: true });
+          HF.shaderBg(K, L, kind);
+          HF.kinetic(K, L, { text: `${kind}: *${txt}*`, at: a + 0.2, style: "focus", y: 440, size: 96 });
+        });
+        // 20-23 s: animated emoji (HF.emoji, Noto Lottie) on a reaction
+        { const L = S.layer(20, 23, S.BACK, { read: true });
+          HF.kinetic(K, L, { text: "It fixed *all three* bugs", at: 20.2, style: "rise", y: 640, size: 96 });
+          HF.emoji(K, L, "mind-blown", 20.4, { x: 700, y: 260, size: 260, until: 21.85, loops: 1 });
+          HF.emoji(K, L, "fire", 20.9, { x: 1000, y: 280, size: 220, until: 22.9 }); }
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

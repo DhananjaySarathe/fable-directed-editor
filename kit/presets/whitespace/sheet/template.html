@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="ws" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff">
+      <video id="room" class="clip" src="assets/room.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // The whitespace still sheet (kit/presets/whitespace/README.md §6, build.py here): one canvas in look D.look with
+      // the pieces a film uses, written the way the README says a whitespace template should be: HF.C tokens instead of
+      // canvas_studio literals, no drift on the cards (whitespace's stage caps it at 0 anyway; canvas_studio keeps its
+      // 2.2 drift), a 26 px mono kicker in HC.sub, body text at 32 px or more, one mark per scene.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["ws"] = tl;
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "ws", width: 1920, height: 1080, words: [], pieces: [{ out_a: 0, out_b: D.total, face: [1030, 560] }] });
+        const Q = K.Q, el = K.el, T = D.total;
+        const P9 = (c, r) => [960 + 1920 * c, 540 + 1080 * r];
+        const C = HF.canvas(K, ROOT, { w: 5760, h: 3240, x: P9(0, 0)[0], y: P9(0, 0)[1], z: 1, look: D.look });
+        const HC = HF.C;
+        const st = (a, b, pos) => C.station(a, b, "mid", pos);
+        const go = (t, pos, o = {}) => C.cam(t, { x: pos[0], y: pos[1], z: o.z || 1 }, { dur: o.dur || 0.55, ease: o.ease || "expo.inOut", sfx: false });
+        const t1 = (s, size = 52, c = HC.ink) => `<div class="cv-t" style="font-size:${size}px;line-height:1.08;color:${c}">${s}</div>`;
+        const s1 = (s, size = 32, c = HC.sub) => `<div class="cv-s" style="font-size:${size}px;margin-top:12px;line-height:1.3;color:${c}">${s}</div>`;
+        const kick = (s) => `<div style="font:500 26px/1 ${HF.F.mono};letter-spacing:.14em;text-transform:uppercase;color:${HC.sub}">${s}</div>`;
+        const pad = (inner, p = "36px 42px") => `<div style="padding:${p}">${inner}</div>`;
+        const acc = (s) => `<span style="color:${HC.acc}">${s}</span>`;
+
+        // ---------------------------------------------------------------- 1. the hook: his card and one statement
+        const S0 = P9(0, 0), F0 = st(0, T + 1, S0);
+        el(F0, "left:1000px;top:330px;width:800px", `${kick("the whole edit")}<div class="cv-t" style="font-size:96px;line-height:1.02;margin-top:26px;letter-spacing:-0.035em">One take in.<br>One film ${acc("out.")}</div>`);
+        C.chip(F0, 1000, 650, `${HF.icon("video", 30, HC.sub, 2)} <span>recorded once, edited by the kit</span>`, 0.6);
+        C.hold(0, 4, 0.03);
+
+        // ---------------------------------------------------------------- 2. a statement takeover (he is off)
+        const S1 = P9(1, 0), F1 = st(3.9, T + 1, S1);
+        go(4, S1);
+        el(F1, "left:0;top:300px;width:1920px;text-align:center", kick("the rule"));
+        const hb = C.big(F1, "Neat beats busy.", 960, 370, 4.3, { size: 170, align: "center" });
+        hb.innerHTML = `${acc("Neat")} beats busy.`;                                  // the one mark: the accent on one word
+        el(F1, `left:0;top:640px;width:1920px;text-align:center`, `<div class="cv-s" style="font-size:34px;color:${HC.sub}">one idea on screen, the camera does the rest</div>`);
+        C.hold(4.6, 8, 0.04);
+
+        // ---------------------------------------------------------------- 3. a system diagram: four cards, beams between
+        const S2 = P9(2, 0), F2 = st(7.9, T + 1, S2);
+        go(8, S2, { dur: 0.9, ease: HF.E.move });
+        el(F2, "left:120px;top:150px", kick("how it fits"));
+        const NODES = [["You", "record"], ["The agent", "plans the edit"], ["The kit", "draws every frame"], ["Engines", "run on the Mac"]];
+        NODES.forEach(([n, s], i) => {
+          const x = 120 + i * 430, hero = i === 2;
+          // drift as canvas_studio code passes it: whitespace's stage holds the landed card still all the same (the
+          // shoot checks it); canvas_studio turns it 1.2 degrees, as it always did
+          const c = C.card(F2, x, 380, 360, 230, 8.4 + i * 0.25, { ry: 0, rx: 0, fromRy: -14, hold: 6, drift: 1.2,
+            html: pad(`<div style="font:600 26px/1 ${HF.F.mono};color:${hero ? HC.acc : HC.sub}">0${i + 1}</div>${t1(n, 46)}${s1(s, 32)}`) });
+          if (hero) c.style.boxShadow = HC.e3;                                        // the hero is the raised one (e3)
+          if (i) C.beam(F2, [[x - 70, 495], [x - 4, 495]], 8.5 + i * 0.25, { dur: 0.35, dot: true, sfx: false });
+        });
+        C.chip(F2, 980, 680, `<span style="width:10px;height:10px;border-radius:50%;background:${HC.acc};display:inline-block"></span> the part this video is about`, 10.2);
+        C.hold(8.9, 12, 0.03);
+
+        // ---------------------------------------------------------------- 4. an evidence close-up: a window, one line marked
+        const S3 = P9(2, 1), F3 = st(11.9, T + 1, S3);
+        go(12, S3);
+        const win = C.window(F3, 120, 170, 1080, 650, { img: "data:image/gif;base64,R0lGODlhAQABAAAAACw=", url: "kit/hf/core.js", ry: 7, rx: 3 });
+        const code = ["// one token set per look", "HF.LOOKS = {", "  canvas_studio: { … },", "  whitespace: {", "    paper: \"#FFFFFF\",", "    acc: one accent,", "  },", "};"];
+        el(win.body, "left:0;top:0;width:100%;height:100%", `<div style="display:flex;padding:34px 0;font:500 30px/58px ${HF.F.code};color:${HC.text}">
+          <div style="width:84px;text-align:right;padding-right:26px;color:${HC.mute};border-right:1px solid ${HC.line}">${code.map((_, i) => 96 + i).join("<br>")}</div>
+          <div style="padding-left:30px;white-space:pre">${code.map((l, i) => i === 4 ? `<span style="position:relative;z-index:1">${HF.esc(l)}</span>` : HF.esc(l)).join("<br>")}</div></div>`);
+        C.highlight(win.body, [128, 34 + 58 * 4 + 6, 380, 46], 13.0, { dur: 0.5, sfx: false });
+        C.land3d(win, 12.3, { ry: 7, rx: 3, fromRy: -12, fromZ: -260, dur: 0.7, sfx: false });   // lands, then holds (whitespace)
+        C.chip(F3, 140, 870, `${HF.icon("file", 28, HC.sub, 2)} <span style="color:${HC.sub}">kit/hf/core.js · today</span>`, 13.4);
+        C.hold(12.6, 16, 0.035);
+
+        // ---------------------------------------------------------------- 5. a chart card that lands
+        const S4 = P9(1, 1), F4 = st(15.9, T + 1, S4);
+        go(16, S4);
+        const panel = C.card(F4, 120, 170, 1060, 720, 16.2, { ry: 5, rx: 1.5, fromRy: -14, fromZ: -260, html: `
+          <div style="position:absolute;left:52px;top:46px">${kick("time spent editing")}${t1("Less by hand, every week", 50)}</div>
+          <div class="cv-s" style="position:absolute;left:60px;top:640px;font-size:32px;color:${HC.sub}">then</div>
+          <div class="cv-s" style="position:absolute;left:760px;top:640px;width:240px;text-align:right;font-size:32px;color:${HC.ink}">now</div>` });
+        C.chart(panel, 60, 210, 940, 380, { pts: [[0, 0.84], [0.35, 0.8], [0.55, 0.66], [0.75, 0.42], [0.9, 0.26], [1, 0.18]],
+          keys: [{ t: 16.6, u: 1, dur: 1.8, ease: "power2.inOut" }], land: 18.5, sfx: false, landSfx: false });
+        C.chip(panel, 800, 300, `<span style="width:10px;height:10px;border-radius:50%;background:${HC.acc};display:inline-block"></span> my bet`, 18.6);
+        C.hold(16.6, 20, 0.03);
+
+        // ---------------------------------------------------------------- 6. the overview: out to see the stations
+        const ov = [(P9(0, 0)[0] + P9(2, 1)[0]) / 2, (P9(0, 0)[1] + P9(2, 1)[1]) / 2];
+        go(20.2, ov, { z: 0.36, dur: 0.9, ease: "power3.inOut" });
+
+        // ---------------------------------------------------------------- him: a card, off for the statement, a circle later
+        C.speaker("room", [
+          { t: 0, mode: "card", x: 500, y: 540, w: 760, h: 800, r: 32 },                                  // the hook: his face first
+          { t: 4, mode: "card", x: 500, y: 540, w: 760, h: 800, r: 32, off: true, dur: 0.35 },          // off for the statement
+          { t: 8.6, mode: "card", x: 1700, y: 880, w: 240, h: 240, r: 120, dur: 0.5 },                    // a circle in the corner
+          { t: 12, mode: "card", x: 1560, y: 520, w: 480, h: 640, r: 32, dur: 0.6, ease: HF.E.move },      // beside the evidence
+          { t: 16, mode: "card", x: 1580, y: 560, w: 520, h: 520, r: 260, dur: 0.6, ease: HF.E.move },     // a circle beside the chart
+          { t: 20.2, mode: "card", x: 1720, y: 900, w: 220, h: 220, r: 110, dur: 0.6, ease: HF.E.move },
+        ], { src: [1920, 1080], at: [1030, 560], head: 330 });
+
+        K.finish(T);
+      })();
+    </script>
+  </body>
+</html>

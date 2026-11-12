@@ -1,0 +1,27 @@
+<style>
+  .so-svg { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+</style>
+<svg class="so-svg" id="so" viewBox="0 0 540 960" preserveAspectRatio="none">
+  <path id="so0" fill="none" stroke="#FF5A1F" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <path id="so1" fill="none" stroke="#FF5A1F" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+</svg>
+<script>
+  (() => {
+    // The outline is built offline (kit/hf/tools/scribble.py) from the same picture it is drawn on: each 12 fps step is
+    // two passes of open runs in 540x960 space, so the outline stays on the speaker and boils on twos.
+    const O = GFX.params.outline, svg = GFX.$("#so"), paths = [GFX.$("#so0"), GFX.$("#so1")];
+    const fps = O.fps || 12, n = O.steps.length;
+    const toD = (runs) => runs.map((r) => {
+      let s = "";
+      for (let i = 0; i + 1 < r.length; i += 2) s += (i ? "L" : "M") + r[i] + " " + r[i + 1];
+      return s;
+    }).join(" ");
+    GFX.each((t) => {
+      const k = Math.max(0, Math.min(n - 1, Math.floor((t / 1000) * fps)));
+      const pass = O.steps[k];
+      paths.forEach((p, j) => p.setAttribute("d", toD(pass[j] || [])));
+    });
+    GFX.in(svg, "fade", { at: 0, dur: 220 });
+    GFX.out(svg, "fade");
+  })();
+</script>

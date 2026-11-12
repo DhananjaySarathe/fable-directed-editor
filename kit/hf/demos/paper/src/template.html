@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="paperdemo" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920" style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#eee4cf"></div>
+    <script>
+      /*DATA*/
+      // STYLE SAMPLE (fixture) of kit/hf/paper.js: the owner's own cut-out (from his What-it-cost still) and the real numbers
+      // of his Haiku vs Opus Short ($0.90 vs $16, "same prompt"). Not an edit: no voice, no claims beyond those numbers.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["paperdemo"] = tl;                                          // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "paperdemo", width: 1080, height: 1920 });
+        const P = HF.paper({ K }, { seed: 11 });
+        const W = K.el(ROOT, "left:0;top:0;width:1080px;height:1920px");
+        P.bg(W, { news: ["same prompt", "two models", "one edit", "claude haiku", "claude opus", "the cost of an edit"] });
+        // a slow camera push over the whole collage (one continuous move, no cuts)
+        const CAM = K.el(W, "left:0;top:0;width:1080px;height:1920px;transform-origin:50% 45%");
+        tl.fromTo(CAM, { scale: 1 }, { scale: 1.06, duration: D.total, ease: "none", immediateRender: false }, 0);
+        P.tape(CAM, "claude edits my videos", { x: 70, y: 150, rot: -3, at: 0.15 });
+        P.hero(CAM, "assets/cut/hero.png", { x: 470, y: 470, h: 1000, at: 0.35, from: "rise", bob: 5 });
+        P.stamp(CAM, "same|*prompt.", { x: 64, y: 260, size: 150, at: 0.7, per: 0.38 });
+        P.ticket(CAM, { title: "opus 5.5 edit", value: "$16", sub: "one video", x: 80, y: 700, w: 330, rot: -5, at: 2.2 });
+        P.tag(CAM, "$0.90 · haiku 5.5", { x: 90, y: 1140, rot: 4, at: 3.0, size: 50 });
+        const ink = P.ink(CAM);
+        ink.circle([96, 790, 290, 140], 3.8);
+        ink.arrow([300, 1240], [420, 1390], 4.4, { bend: -0.3 });
+        ink.note(250, 1400, "same video", 4.7, { size: 64, rotate: -6 });
+        P.polaroid(CAM, "assets/term.png", { x: 600, y: 1360, w: 380, rot: 6, at: 5.6, caption: "the edit is code" });
+        P.stamp(CAM, "~18x|*cheaper.", { x: 64, y: 1500, size: 130, at: 6.6, per: 0.36 });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

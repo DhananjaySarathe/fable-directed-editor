@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="catalog" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: the vendored HyperFrames catalog pieces (kit/hf/catalog) mounted in one look (D.look), two per 5 s window,
+      // over the look's own frame. Made-up content; a check page, not an edit (kit/hf/demos/catalog/build.py).
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["catalog"] = tl;                                          // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "catalog", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        let label;
+        if (D.look === "canvas_studio") {
+          const CV = HF.canvas(K, ROOT, { w: 5760, h: 3240 });
+          CV.station(0, D.total + 1, "mid", [CV.CW / 2, CV.CH / 2]);
+          st.cam.style.display = "none";
+          const P = HF.parts(K, ROOT, { z: 7 });
+          label = (t, s) => P.mono(P.layer(t, t + 4.9, P.FRONT), 80, 70, s, `font-size:24px;color:${HF.C.sub}`);
+        } else {
+          const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.3, palette: D.look === "night" ? HF.night.PALETTE : undefined,
+            chrome: { left: "fixture · catalog · " + D.look, badge: "1080p" } });
+          if (D.look === "night") HF.night(S, st, { cut: null, left: "fixture · catalog · night" });
+          S.beat(0, "graphic");
+          label = (t, s) => S.mono(S.layer(t, t + 4.9, S.BACK), 80, 70, s, `font-size:24px;color:${HF.C.sub}`);
+        }
+        D.windows.forEach((w, i) => label(i * 5 + 0.1, w));
+        K.sfx("ui/ui__select-click__mixkit-1109", 0.5, -24, true);                  // cues.mjs needs one cue on a page
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

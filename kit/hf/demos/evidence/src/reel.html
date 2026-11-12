@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="evreel" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920" style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (9:16): kit/hf/evidence.js on HF.reel. A test-pattern camera and made-up numbers; a check page, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["evreel"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "evreel", width: 1080, height: 1920, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.reel(K, ROOT, st, { end: D.total, talk: D.total - 0.4, label: "fixture · evidence" });
+        const { C, el, layer, land, card, line, beat } = S;
+        beat(0, "beside", { side: "top" });                  // the card is on top: the box takes the bottom
+        { const L = layer(0.2, 7, S.BACK);            // a prompt card at native size, then focused on its key line
+          const c = card(L, 90, 360, 900, 420, "", "");
+          el(c, "left:0;top:0;right:0;height:66px", "<i></i><i></i><i></i><b>assistant</b>", "tbar");
+          const body = el(c, "left:40px;top:100px;right:40px", "", "hf-abs");
+          const p = (txt) => { const d = document.createElement("div"); d.className = "txt"; d.style.cssText = "padding:6px 10px;border-radius:10px"; d.textContent = txt; body.append(d); return d; };
+          p("Act as my content strategist.");
+          const key = p("Recommend my next three videos using evidence, not generic advice.");
+          p("Audit my channel first.");
+          land(c, 0.4);
+          S.focus(L, c, { at: 2.2, until: 6.4, line: key, side: "top" }); }
+        beat(7, "graphic");
+        { const L = layer(7.2, D.total, S.BACK);
+          line(L, "two edits, one *prompt", 7.3, { x: 70, y: 330, size: 92 });
+          const sb = S.scoreboard(L, 70, 520, 940, { title: "cost", rows: [{ name: "Haiku 5.5", color: "#0f9d8a" }, { name: "Opus 5.5", color: C.acc }], at: 7.5, fmt: (v) => "$" + v.toFixed(2) });
+          sb.set(0, 0.9, 8.6); sb.set(1, 16, 10.2); sb.win(0, 11.6); S.quiet(10.1, 11.4); }
+        S.box({ faceAt: () => [540, 700] });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,73 @@
+{
+  "name": "preset_whitespace",
+  "first_used": "built 2026-10-22 (kit v11) from the owner's asks on films/oss-editor: holistic not heavy, a white background, face-off scenes, the camera on him; not yet approved on a sample",
+  "default_for": "new talking-head edits, 16:9 long-form and samples (decision 2026-10-22); preset_canvas_studio stays available and renders as before",
+  "engine": "kit/hf/canvas.js: HF.canvas(K, ROOT, { ..., look: \"whitespace\" }); HF.studio / HF.reel { look: \"whitespace\" } (kit/hf/studio.js HF.studioLook)",
+  "tokens": "kit/hf/core.js HF.LOOKS.whitespace (C, F) and HF.LOOKS.whitespace.stage; the values below mirror them",
+  "format": { "page": [1920, 1080], "render": "1080p for previews and samples; 4K only for a final he asks for", "fps": 30 },
+  "canvas": { "from": "kit/presets/canvas_studio/preset.json canvas (world, stations, parallax)", "station_perspective_px": 2000 },
+  "palette": {
+    "page": "#FFFFFF", "seamless": "radial-gradient(ellipse 75% 80% at 50% 45%, #FFFFFF 0%, #FFFFFF 55%, #F5F5F6 100%)", "edge": "#F5F5F6",
+    "falloff": "true white over the middle 55 %, about 3 % darker in the far corners",
+    "card": "#FFFFFF", "sunk": "#F5F5F7", "line": "rgba(14,14,18,.10)", "hairline": "1 px, inside e1-e3",
+    "ink": "#0E0E12", "text": "#2B2B31", "ink2": "#45454D", "sub": "#63636C", "mute": "#83838C",
+    "accent": "#5646D6", "accent_tint": "#EEEBFF", "highlighter": "#E4DFFF", "second_hue": null,
+    "ok": "#1A7F4B", "bad": "#C8364B", "on_video": "#D9D3FF",
+    "contrast_on_white": { "ink": 19.3, "text": 14.1, "ink2": 9.5, "sub": 6.0, "mute": 3.8, "accent": 6.5 }
+  },
+  "elevation": {
+    "e1": "0 0 0 1px rgba(16,18,28,.08), 0 1px 2px rgba(16,18,28,.05), 0 6px 16px rgba(16,18,28,.06)",
+    "e2": "0 0 0 1px rgba(16,18,28,.07), 0 2px 4px rgba(16,18,28,.04), 0 14px 36px rgba(16,18,28,.09)",
+    "e3": "0 0 0 1px rgba(16,18,28,.06), 0 4px 10px rgba(16,18,28,.05), 0 28px 72px rgba(16,18,28,.13)",
+    "use": { "e1": "a chip, a row", "e2": "a card", "e3": "the scene's one hero object: a window, the hero card, his shape" }
+  },
+  "type": {
+    "statement": "Inter 700, sentence case, -0.045 em, 150-200 px (C.big)",
+    "title": "Inter 700, -0.025 em, 44-56 px on cards (.cv-t)",
+    "label": "Inter 500, 32-36 px (.cv-s); chips Inter 600 32 px",
+    "kicker": "JetBrains Mono 500, 26-28 px, uppercase, 0.14 em, sub (6:1 on white; mute is 3.8:1, for 32 px and up only)",
+    "max_sizes_per_scene": 3, "text_min_px": 32, "kicker_min_px": 26,
+    "min_rule": "body text and labels >= 32 px; the kicker is the one exception, >= 26 px and always in sub"
+  },
+  "pieces": {
+    "beam": "4 px ink line (max 5 px), no glow, an accent node r 8 in a white ring",
+    "highlight": "a solid #E4DFFF marker, multiply, full strength",
+    "chart": "one accent stroke 6 px over a flat 4.5 % tint, hairline grid, 2 px base, no glow or halo, white tip in an accent ring",
+    "window": "white, e3, grey traffic lights",
+    "speaker": "his graded room in a rounded card (r 32) or a circle, e3 shadow; no glow ring, no back block",
+    "blocks": "neutral #F3F3F5 whatever colour is named, a hex included (stage.blocks; avoid them)",
+    "cards": "land once, then hold still: stage.driftMax 0 caps any drift a template passes (like the beam's wMax); pass none",
+    "palette": "a film's palette acc is the one accent: the kit's components and the stage (grad, beam node, chart, the marker at 17 % on white)",
+    "diagram": "HF.diagram style flat (the default on this look; kit/refs/DIAGRAMS.md): hairline boxes on a 4 px grid, mono tags, one focal box (accent tint, raised to e3), straight or right-angle connectors that never share a port, a loop's way back dashed under the row with a caps label; budgets 5 nodes (4 on 9:16), 6 edges, 2 focal, labels <= 14 characters"
+  },
+  "restraint": {
+    "one_idea_on_screen": "one hero object + one supporting chip or source line + him",
+    "accents": 1, "marks_per_sentence_max": 1,
+    "banned": ["gradients", "glows", "pastel blocks", "colour shader washes", "a dark anchor card", "a second accent hue", "HF.shaderBg grounds", "grain", "curved diagram connectors"],
+    "margin_px": 120, "content_frame_share_max": 0.55,
+    "depth": "shadows, hairlines and 3D turns only",
+    "motion": "the camera carries the energy; elements land once, then stay still (the engine caps drift at 0 on this look)"
+  },
+  "speaker": {
+    "rule": "never cut out: full frame or a closed shape with his graded room; his room as shot (no blur, dim, vignette or whitening)",
+    "hook": "opens on his face",
+    "takeovers": { "share_of_runtime": [0.15, 0.30], "each_s": [4, 12], "face_between_s_min": 3, "away_s_max": 12 },
+    "seated_full_frame": { "share_max": 0.30, "single_layout_cap": 0.35, "crop": "a clean rect of his plain wall" },
+    "camera_on_him": { "framing_change_every_s": [4, 8], "push": [0.06, 0.12], "punch": [1.12, 1.18], "punch_min_gap_s": 12,
+      "truck_max": 0.03, "roll_max_deg": 0.6, "settle_after_whip": true, "handheld": false, "zoom_cap": "tracks.json max_zoom (1.2 when missing)" },
+    "motion_blur": "on his footage only from fast camera moves (whips, zoom-throughs)"
+  },
+  "takeover_recipes": {
+    "statement": "kicker (mono caps 26-28 px, sub) + C.big (Inter 700) + the one mark (accent word or a drawn underline) + at most one 32-36 px line; C.hold push",
+    "system_diagram": "3-4 C.card (e2), the hero raised to e3 with the accent numeral, C.beam ink lines with accent nodes drawing on the links, one chip",
+    "evidence_close_up": "C.window (real capture or a generic mock) at e3, C.highlight on the one line, a dated source chip, the camera pushes into the line"
+  },
+  "grade": { "footage": "the 'clean' look offered as an A/B against the current look", "screen_recordings": "ungraded" },
+  "audio": {
+    "bed": "one calm bed (lo-fi, chill, soft piano), long-form 18 dB under the voice with a voice-keyed duck (no pumping); Reels about 12 dB",
+    "no": ["drops", "risers on long-form"]
+  },
+  "transitions": "our own code: camera whips, pushes and pull-outs, his shape morphing, hard cuts; no shader transitions",
+  "qa": { "precheck": "0 HIGH", "looks_check": "node kit/hf/demos/looks/check.mjs whitespace whitespace:studio (contrast >= 3:1)",
+    "still_sheet": "uv run python kit/presets/whitespace/sheet/build.py --room <take> && node kit/presets/whitespace/sheet/shoot.mjs (fails if a landed card moves)", "critic": "kit/qa/CRITIC.md" }
+}

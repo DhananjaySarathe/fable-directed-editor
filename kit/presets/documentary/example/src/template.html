@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="docfilm" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#000">
+      <!-- the cut's picture track (kit/film/cut.py: work/aroll.mp4, the graded one once `grade` has run) -->
+      <video id="aroll" class="clip" src="assets/aroll.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // kit/presets/documentary (2026-10-24): copy this file to films/<name>/src/template.html for a film whose film.py
+      // says PRESET = "documentary". D.doc (kit/film/doc.py) carries the cutaways, lower-thirds, chapters, stamps,
+      // letterbox spans, subtitles and the results board; HF.doc places them. Add the film's own scenes below DC.all():
+      // screen work (HF.screen), a results board (DC.results), a stamp by hand (DC.stamp). Times are word ids: K.W(id).
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["docfilm"] = tl;                                       // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "docfilm", width: 1920, height: 1080, fps: (D.lens && D.lens.fps) || 30, words: D.words, pieces: D.pieces });
+        const DC = HF.doc(K, ROOT, { aroll: "aroll", D });
+        DC.all();
+
+        // the page's sound cues (cues.mjs needs at least one): a soft slide under each chapter card
+        (D.doc.chapters || []).forEach((c) => K.sfx("slide", c.a, -26));
+
+        // ---- the film's own scenes go here ----
+
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,175 @@
+{
+ "agent-cursor": {
+  "file": "agent-cursor.html",
+  "duration": 4.8,
+  "explains": [
+   "process",
+   "mechanism"
+  ],
+  "what": "an AI agent's cursor works through named steps, a status chip saying what it is doing",
+  "vars": {
+   "agent_name": "Agent",
+   "steps": "Reading the page,Opening Settings,Turning on backups,Done",
+   "targets": "25,47;76,30",
+   "accent": "#0a84ff"
+  },
+  "accent_var": "accent",
+  "cdn_gsap_removed": 0,
+  "fit": "scale"
+ },
+ "chat-thread": {
+  "file": "chat-thread.html",
+  "duration": 12.0,
+  "explains": [
+   "conversation",
+   "story"
+  ],
+  "what": "a phone chat: messages arrive with typing dots and read receipts",
+  "vars": {
+   "contact": "Rachel",
+   "unread": 12,
+   "messages": "recv:what r u using for the launch video??|sent:wait look \ud83d\udc40|card:HyperFrames \u2014 Write HTML, render pixel-perfect video~hyperframes.heygen.com|recv:OMG IT&#39;S HTML|emoji:\ud83e\udd2f\ud83e\udd2f\ud83e\udd2f|sent:renders in 4K. no editor",
+   "beat": 1.7,
+   "dots": "on",
+   "receipt": "on"
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ },
+ "conic-progress-ring": {
+  "file": "conic-progress-ring.html",
+  "duration": null,
+  "explains": [
+   "quantity"
+  ],
+  "what": "a ring fills to a share, the figure in the middle (real numbers only)",
+  "vars": {
+   "progress": 100,
+   "thickness": 12,
+   "label": "100"
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ },
+ "cursor-text-select": {
+  "file": "cursor-text-select.html",
+  "duration": 4.2,
+  "explains": [
+   "proof",
+   "emphasis"
+  ],
+  "what": "a cursor drags across a passage and selects the phrase that matters",
+  "vars": {
+   "title": "Spring release notes",
+   "text": "Our spring release ships on Thursday. Teams can now share a live review link, collect time-stamped comments, and approve the final cut without leaving the editor. Early customers cut their review rounds in half.",
+   "phrase": "approve the final cut",
+   "accent": "#0a84ff"
+  },
+  "accent_var": "accent",
+  "cdn_gsap_removed": 0
+ },
+ "cursor-zoom-follow": {
+  "file": "cursor-zoom-follow.html",
+  "duration": 5.8,
+  "explains": [
+   "instruction",
+   "proof"
+  ],
+  "what": "screen-recording auto-zoom: a cursor clicks through your screenshot while the camera follows it in",
+  "vars": {
+   "image": "",
+   "zoom": 1.8,
+   "click1_x": 68.5,
+   "click1_y": 7.5,
+   "click2_x": 50,
+   "click2_y": 48.5,
+   "click3_x": 90.5,
+   "click3_y": 7.5,
+   "accent": "#0a84ff"
+  },
+  "accent_var": "accent",
+  "cdn_gsap_removed": 0
+ },
+ "decline-chart": {
+  "file": "decline-chart.html",
+  "duration": 4.0,
+  "explains": [
+   "quantity",
+   "comparison"
+  ],
+  "what": "a value falls from start to end with its counter (real numbers only)",
+  "vars": {
+   "label": "Retention",
+   "start_value": 82,
+   "end_value": 34
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ },
+ "headline-slam": {
+  "file": "headline-slam.html",
+  "duration": 3.5,
+  "explains": [
+   "emphasis"
+  ],
+  "what": "a headline slams in, one word in the accent",
+  "vars": {
+   "text": "Ship it today",
+   "accent_word_index": 1,
+   "accent": "green",
+   "shadow": true
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1,
+  "fit": "scale"
+ },
+ "marker-highlight": {
+  "file": "marker-highlight.html",
+  "duration": 3.5,
+  "explains": [
+   "emphasis",
+   "definition"
+  ],
+  "what": "a line of type with one word swept by a marker",
+  "vars": {
+   "text": "Ship it with confidence",
+   "emphasis_word": "confidence",
+   "style": "highlight",
+   "draw_at": 0.9,
+   "accent": "green",
+   "exit": "none"
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ },
+ "notes-typing": {
+  "file": "notes-typing.html",
+  "duration": 10.0,
+  "explains": [
+   "instruction",
+   "process"
+  ],
+  "what": "a notes app types a list line by line",
+  "vars": {
+   "title": "Things nobody told me|about video.",
+   "lines": "my videos sucked|my tools cost $$$|and re-edits never end.",
+   "speed": 1
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ },
+ "push-in": {
+  "file": "push-in.html",
+  "duration": 4.0,
+  "explains": [
+   "emphasis"
+  ],
+  "what": "a slow push in on one line: the camera leans in on a claim",
+  "vars": {
+   "text": "Focus",
+   "intensity": "standard"
+  },
+  "accent_var": null,
+  "cdn_gsap_removed": 1
+ }
+}

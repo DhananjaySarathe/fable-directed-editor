@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="dgtk" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff">
+      <img id="room" src="assets/room.jpg" alt="" />
+    </div>
+    <script>
+      const D = /*DATA*/;
+      // FIXTURE (a check page; made-up copy): C.takeover's diagram kind on a canvas in look D.look. Whitespace draws the
+      // flat diagram (its eyebrow, the way back under the row); canvas_studio its icon circles with v11's margin and a
+      // reverse edge on its own port. His shape is a still (assets/room.jpg: ffmpeg's test pattern) so frames seek the same.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = { dgtk: tl };
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "dgtk", width: 1920, height: 1080, words: [], pieces: D.pieces });
+        const C = HF.canvas(K, ROOT, { w: 5760, h: 3240, x: 960, y: 540, z: 1, look: D.look });
+        const HC = HF.C, F0 = C.station(0, 14, "mid", [960, 540]);
+        K.el(F0, "left:130px;top:380px;width:900px", `<div class="cv-t" style="font-size:84px;line-height:1.04">Built as a page,<br>seen as a film.</div>`);
+        C.hold(0, 4, 0.03);
+        C.takeover(4, 11, { kind: "diagram", in: "fade", out: "fade", title: "the loop", type: "loop",
+          nodes: [{ id: "build", label: "Build", sub: "the page", icon: "code", at: 4.3 }, { id: "draft", label: "Draft", sub: "a fast render", icon: "play", at: 4.8 },
+            { id: "critic", label: "Critic", sub: "every frame", icon: "eye", focal: true, at: 5.3 }],
+          edges: [["build", "draft", 4.6], ["draft", "critic", 5.1], { from: "critic", to: "build", t: 5.9, label: "fix what broke", accent: true, curve: 0.32 }],
+          flows: [["critic", "build", 7.0, { period: 3.2, dur: 1.2 }]] });
+        C.speaker("room", [{ t: 0, mode: "card", x: 1450, y: 540, w: 560, h: 700, r: 32, at: D.at, s: 1.1 * Math.max(560 / D.src[0], 700 / D.src[1]) }],
+          { src: D.src, at: D.at, head: D.src[0] * 0.3 });
+        K.finish(__TOTAL__);
+        window.__seek = async (t) => { tl.seek(t, false); };
+      })();
+    </script>
+  </body>
+</html>

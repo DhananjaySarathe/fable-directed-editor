@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+    <style>
+      .tag { position: absolute; right: 56px; top: 44px; padding: 10px 18px; border-radius: 999px; background: rgba(27, 24, 21, 0.86); color: #f3eee6;
+        font: 500 20px "JBMono", monospace; white-space: nowrap; opacity: 0; z-index: 30; }
+      .bar { position: absolute; height: 46px; border-radius: 12px; transform-origin: 0 50%; }
+      .sw { position: absolute; border-radius: 22px; box-shadow: 0 22px 60px rgba(60, 40, 20, 0.16); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="boxdemo" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["boxdemo"] = tl;                                            // the linter looks for this line
+        const K = HF.kit({ tl, id: "boxdemo", width: 1920, height: 1080 });
+        const st = HF.stage(K, document.getElementById("root"), { aroll: "aroll" });
+        const C = HF.C, Q = K.Q, B_ = D.beats;
+        const at = (id) => B_.find((b) => b.tag === id).t;
+        const end = (id) => { const i = B_.findIndex((b) => b.tag === id); return i + 1 < B_.length ? B_[i + 1].t : D.total; };
+        const layer = (a, b) => {                                                       // never a still: every graphic layer creeps in
+          const L = K.el(st.cards, "left:0;top:0;width:1920px;height:1080px;transform-origin:50% 50%"); K.show(L, a - 0.02, b); K.drift(L, a, b, 1.04); return L; };
+        const out = (els, t) => els.forEach((e, i) => K.exit(e, t - 0.2 + i * 0.03));
+
+        // ---- the beats' content (paper studio, our own words and layout; the box moves are the point)
+        // hero: headline above the centred card
+        { const a = at("hero"), b = end("hero"), L = layer(a, b);
+          const h = K.words(L, "AI can finally do *high-level editing.", "left:0;width:1920px;top:62px;font-size:104px;text-align:center");
+          K.rise(h.ws, h.ws.map((_, i) => a + 0.15 + i * 0.12)); K.tl.to(h.box, { opacity: 0, duration: 0.18 }, Q(b - 0.18)); }
+        // beside: the struck-out claim, the face on the right
+        { const a = at("noob"), b = end("noob"), L = layer(a, b);
+          const lb = K.el(L, "left:120px;top:330px;opacity:0", "— like, not any", "hf-lbl hf-abs"); K.enter(lb, a + 0.1);
+          const h = K.words(L, "noob-level|work", "left:116px;top:390px;font-size:150px");
+          K.rise(h.ws, [a + 0.2, a + 0.55]);
+          const s = K.el(L, `left:110px;top:470px;width:560px;height:9px;border-radius:5px;background:${C.acc};transform-origin:0 50%;transform:scaleX(0)`);
+          K.tl.to(s, { scaleX: 1, duration: 0.35, ease: "power3.out" }, Q(a + 1.1));
+          K.tl.to(h.box, { opacity: 0.45, duration: 0.3 }, Q(a + 1.2)); K.sfx("click", a + 1.1); }
+        // graphic: professional-grade -> premium motion (a timeline, then a curve)
+        { const a = at("pro"), b = end("pro"), L = layer(a, b);
+          const h = K.words(L, "professional-grade *editing.", "left:150px;top:150px;font-size:112px");
+          K.rise(h.ws, [a + 0.25, a + 0.6, a + 0.9]);
+          const cols = [C.acc, "#d9a441", "#7aa37a", C.ink2];
+          [[0, 0, 300], [0, 330, 420], [0, 780, 260], [1, 120, 380], [1, 540, 300], [2, 0, 520], [2, 560, 340], [3, 200, 600]].forEach(([r, x, w], i) => {
+            const d = K.el(L, `left:${300 + x}px;top:${430 + r * 70}px;width:${w}px;background:${cols[r]};opacity:.85`, "", "bar hf-abs");
+            K.tl.fromTo(d, { scaleX: 0 }, { scaleX: 1, duration: 0.45, ease: "expo.out" }, Q(a + 1.0 + i * 0.07)); });
+          const ph = K.el(L, `left:300px;top:410px;width:4px;height:310px;background:${C.ink};opacity:0`); K.fade(ph, a + 1.1, 0.15);
+          K.tl.fromTo(ph, { x: 0 }, { x: 1100, duration: 2.2, ease: "none" }, Q(a + 1.2));
+          const t2 = a + 2.45;
+          K.tl.to([h.box, ...L.querySelectorAll(".bar"), ph], { opacity: 0, y: -20, duration: 0.25, ease: "power2.in", stagger: 0.01 }, Q(t2 - 0.25));
+          const h2 = K.words(L, "premium *motion graphics.", "left:150px;top:150px;font-size:112px"); K.rise(h2.ws, [t2, t2 + 0.3, t2 + 0.55]);
+          L.insertAdjacentHTML("beforeend", `<svg class="hf-abs" style="left:360px;top:380px" width="1200" height="520" viewBox="0 0 1200 520"><path id="crv" d="M20 480 C 420 480, 520 60, 1180 40" fill="none" stroke="${C.acc}" stroke-width="7" stroke-linecap="round"/></svg>`);
+          const crv = L.querySelector("#crv"), len = 1400; crv.style.strokeDasharray = len;
+          K.tl.fromTo(crv, { strokeDashoffset: len }, { strokeDashoffset: 0, duration: 0.9, ease: "power3.inOut" }, Q(t2 + 0.2));
+          const dot = K.el(L, `left:${360 + 1180 - 16}px;top:${380 + 40 - 16}px;width:32px;height:32px;border-radius:50%;background:${C.ink};opacity:0`); K.enter(dot, t2 + 1.0, { scale: 0.3, y: 0 }, 0.3); }
+        // aside: a number beside the small card
+        { const a = at("mins"), b = end("mins"), L = layer(a, b);
+          const lb = K.el(L, "left:880px;top:330px;opacity:0", "one prompt, one take", "hf-lbl hf-abs"); K.enter(lb, a + 0.15);
+          const n = K.el(L, "left:870px;top:380px;font-size:300px;opacity:0", "", "hf-serif hf-abs"); K.fade(n, a + 0.2, 0.2);
+          K.countUp(n, 0, 20, a + 0.2, 1.4);
+          const m = K.words(L, "*min", "left:1160px;top:520px;font-size:140px"); K.rise(m.ws, [a + 0.6]); }
+        // face: a quiet line, lower left
+        { const a = at("share"), b = end("share"), L = layer(a, b);
+          const h = K.words(L, "I'm sharing|*the process.", "left:96px;top:800px;font-size:84px;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.45)");
+          K.rise(h.ws, [a + 0.3, a + 0.55, a + 0.9, a + 1.1]); K.tl.to(h.box, { opacity: 0, duration: 0.15 }, Q(b - 0.25)); }
+        // graphic after the collapse: a card grows out of the pill, then the cost compare, Why?, pixels vs code
+        { const a = at("cheap"), b = end("cheap"), L = layer(a, b);
+          const land = a - 0.04 + HF.box.MOVES.collapse.dur, pill = { cx: 960, cy: 540, w: 1920 * 0.14, h: 1080 * 0.085 };   // the director lands the collapse here
+          const cd = HF.card(K, L, 360, 170, 1200, 740, "", "background:#fff");
+          HF.box.morph(K, cd, pill, { x: 360, y: 170, w: 1200, h: 740 }, land, 0.32, { fromBg: C.acc, bg: "#ffffff" });
+          const h = K.words(cd, "*way cheaper.", "left:80px;top:60px;font-size:120px"); K.rise(h.ws, [land + 0.2, land + 0.35]);
+          [["$", 120, C.ink2, 0], ["$$$$", 430, C.acc, 1]].forEach(([lab, hh, col, i]) => {
+            const x = 220 + i * 520, bar = K.el(cd, `left:${x}px;top:${640 - hh}px;width:300px;height:${hh}px;border-radius:16px;background:${col};transform-origin:50% 100%`);
+            K.tl.fromTo(bar, { scaleY: 0 }, { scaleY: 1, duration: 0.6, ease: "expo.out" }, Q(land + 0.6 + i * 0.5));
+            const tx = K.el(cd, `left:${x}px;top:${590 - hh}px;width:300px;text-align:center;font:700 34px Inter,sans-serif;color:${col};opacity:0`, lab); K.fade(tx, land + 0.9 + i * 0.5, 0.25);
+            K.el(cd, `left:${x}px;top:660px;width:300px;text-align:center;font:600 24px Inter,sans-serif;color:${C.mute}`, i ? "a premium agency" : "this workflow"); });
+          const tw = land + 3.6;
+          K.tl.to(cd, { scale: 1.06, x: -36, y: -22, duration: 2.4, ease: "none" }, Q(land + 0.9));   // a held card keeps moving (centred push; the morph keeps origin 0 0)
+          K.exit(cd, tw - 0.3, { scale: 0.96, y: 0 });
+          const why = K.words(L, "Why?", "left:0;width:1920px;top:360px;font-size:300px;text-align:center"); K.rise(why.ws, [tw]); why.box.style.transformOrigin = "50% 50%";
+          K.tl.fromTo(why.box, { scale: 1 }, { scale: 1.12, duration: 1.6, ease: "none", immediateRender: false }, Q(tw + 0.2)); K.tl.to(why.box, { opacity: 0, duration: 0.2 }, Q(tw + 1.6));
+          const tp = tw + 1.8;
+          const h3 = K.words(L, "not generating every *pixel —", "left:150px;top:150px;font-size:100px"); K.rise(h3.ws, h3.ws.map((_, i) => tp + i * 0.15));
+          const grid = K.el(L, "left:300px;top:340px;width:1320px;height:460px");
+          for (let r = 0; r < 9; r++) for (let c = 0; c < 26; c++) { const d = K.el(grid, `left:${c * 50}px;top:${r * 50}px;width:30px;height:30px;border-radius:8px;background:${(r * 7 + c * 3) % 5 ? C.ink2 : C.acc};opacity:0`); K.tl.to(d, { opacity: 0.8, duration: 0.15 }, Q(tp + 0.4 + ((r * 26 + c) % 37) * 0.03)); }
+          const tc = tp + 2.6;
+          K.tl.to([h3.box, grid], { opacity: 0, duration: 0.25 }, Q(tc - 0.25));
+          const h4 = K.words(L, "writing *code.", "left:150px;top:150px;font-size:100px"); K.rise(h4.ws, [tc, tc + 0.25]);
+          const w = HF.card(K, L, 300, 330, 1320, 520, "", "background:#1b1815");
+          K.enter(w, tc + 0.1, { y: 40 });
+          const code = K.el(w, "left:60px;top:60px;width:1200px;height:420px;font:500 34px/1.6 JBMono,monospace;color:#ece5da;white-space:pre", "");
+          K.typeText(code, "const card = stage.box(\"right\");\ncard.flip({ from: prompt });\ncard.sway(0.4);", tc + 0.4, 34); }
+        // beside (content right): references, then the lock
+        { const a = at("refs"), b = end("refs"), L = layer(a, b);
+          const h = K.words(L, "give it *references,", "left:1000px;top:170px;font-size:96px"); K.rise(h.ws, [a + 0.2, a + 0.4, a + 0.6]);
+          const sw = [["linear-gradient(135deg,#f5c9a8,#d98a5f 60%,#8a4b2e)", 1010, 360, -5], ["#fff", 1290, 380, 3], ["#fff", 1560, 350, -2]];
+          sw.forEach(([bg, x, y, r], i) => { const d = K.el(L, `left:${x}px;top:${y}px;width:240px;height:300px;background:${bg};transform:rotate(${r}deg)`, "", "sw hf-abs"); K.enter(d, a + 0.7 + i * 0.25, { y: 60, rotation: r * 2 }, 0.5); });
+          L.children[L.children.length - 2].innerHTML = `<div class="hf-serif" style="position:absolute;left:0;width:240px;top:70px;text-align:center;font-size:150px">Aa</div>`;
+          L.children[L.children.length - 1].innerHTML = [C.acc, C.ink, "#d9a441", "#7aa37a"].map((c, i) => `<i style="position:absolute;left:${40 + (i % 2) * 100}px;top:${60 + Math.floor(i / 2) * 100}px;width:64px;height:64px;border-radius:50%;background:${c}"></i>`).join("");
+          const lockAt = a + 2.6, lk = K.el(L, `left:1420px;top:720px;width:96px;height:96px;border-radius:50%;background:${C.ink};display:flex;align-items:center;justify-content:center;opacity:0`, HF.icon("lock", 46, "#fff", 2.4));
+          K.enter(lk, lockAt, { scale: 0.4, y: 0 }, 0.35); K.sfx("check", lockAt);
+          const h2 = K.words(L, "to lock *the aesthetic.", "left:1000px;top:870px;font-size:64px"); K.rise(h2.ws, h2.ws.map((_, i) => lockAt + 0.1 + i * 0.1)); }
+        // graphic: the prompt card types, then (at the flip) turns over into the face
+        let prompt;
+        { const a = at("prompt"), b = end("prompt") + 0.3, L = layer(a, b);
+          const h = K.words(L, "no *keyframes.", "left:1060px;top:420px;font-size:130px"); K.rise(h.ws, [a + 0.15, a + 0.4]);
+          const s = HF.box.SLOTS["16:9"].left, w = s.w * 1920, hh = s.h * 1080;
+          prompt = HF.card(K, L, s.cx * 1920 - w / 2, s.cy * 1080 - hh / 2 + 60, w, hh - 120, "", "background:#fff;transform-origin:50% 50%");
+          K.enter(prompt, a + 0.3, { y: 50 });
+          K.el(prompt, `left:40px;top:36px;opacity:1`, "prompt", "hf-lbl hf-abs");
+          const tx = K.el(prompt, "left:40px;top:96px;width:760px;font:600 46px/1.35 Inter,sans-serif;color:#1b1815;white-space:normal", "");
+          K.typeText(tx, "make the font bigger, keep the face on the left", a + 0.6, 22);
+          K.tl.set(h.box, { opacity: 0 }, Q(end("prompt"))); }
+        // beside (content right) after the flip: talk to Claude
+        { const a = at("talk"), b = end("talk"), L = layer(a, b);
+          const h = K.words(L, "*talk to|Claude.", "left:1060px;top:330px;font-size:150px"); K.rise(h.ws, [a + 0.25, a + 0.45, a + 0.75]); }
+        // aside: the word that obeys
+        { const a = at("move"), b = end("move"), L = layer(a, b);
+          const cd = HF.card(K, L, 820, 250, 960, 580, "", "background:#fbe4dc"); K.enter(cd, a + 0.12, { x: 80, y: 0 }, 0.35);
+          K.el(cd, "left:70px;top:90px;font-size:80px", "I make things", "hf-serif hf-abs");
+          const mv = K.el(cd, "left:70px;top:190px;font-size:190px;font-style:italic;transform-origin:0 70%", "move.", "hf-serif hf-abs");
+          const ask = K.el(L, `left:1280px;top:190px;padding:10px 18px;border-radius:12px;background:${C.ink};color:#fff;font:500 22px JBMono,monospace;opacity:0`, "make it bigger ↵");
+          K.enter(ask, a + 1.2, { y: 10 }, 0.3); K.sfx("click", a + 1.2);
+          K.tl.to(mv, { scale: 1.45, duration: 0.5, ease: "expo.out" }, Q(a + 1.8)); K.sfx("pop", a + 1.8); }
+        // graphic: hours in editing, a clock
+        { const a = at("hours"), b = end("hours"), L = layer(a, b);
+          const h = K.words(L, "*hours in editing —|gone.", "left:150px;top:150px;font-size:110px"); K.rise(h.ws, [a + 0.2, a + 0.45, a + 0.7, a + 2.4]);
+          const ck = K.el(L, `left:1180px;top:300px;width:480px;height:480px;border-radius:50%;background:#fff;box-shadow:0 30px 80px rgba(60,40,20,.18);opacity:0`);
+          K.enter(ck, a + 0.3, { scale: 0.8, y: 0 }, 0.45);
+          const hand = (len, wd, col) => K.el(ck, `left:${240 - wd / 2}px;top:${240 - len}px;width:${wd}px;height:${len}px;border-radius:${wd}px;background:${col};transform-origin:50% 100%`);
+          const hh = hand(130, 12, C.ink), mm = hand(190, 7, C.acc);
+          K.tl.fromTo(mm, { rotation: 0 }, { rotation: 360 * 5, duration: 3.6, ease: "power2.inOut" }, Q(a + 0.5));
+          K.tl.fromTo(hh, { rotation: 0 }, { rotation: 150, duration: 3.6, ease: "power2.inOut" }, Q(a + 0.5)); }
+        // end: one line over the face
+        { const a = at("end"), L = layer(a, D.total);
+          const p = HF.pill(K, L, 640, 900, `<span style="font:600 30px Inter,sans-serif">you talk.</span> <span class="hf-serif" style="font-size:44px;font-style:italic;color:${C.acc}">it designs.</span>`, "padding:18px 34px");
+          K.enter(p, a + 0.5, { y: 30 }); }
+
+        // ---- the speaker box: the director's moves from the beats, the flip from the prompt card
+        const plan = HF.box.direct({ beats: D.beats });
+        plan.shots.forEach((s) => { if (s.in === "flip") s.from = prompt; });
+        const B = HF.box(K, st, { shots: plan.shots, face: D.face });
+        window.__boxlog = plan.log;
+        // the move's name, top right (a teaching label for the demo only)
+        plan.log.filter((l) => l[2] !== "note" && l[2] !== "cut").forEach(([t, where, mv]) => {
+          const tg = K.el(st.top, "", `${mv} → ${where} · ${HF.box.MOVES[mv].dur.toFixed(2)} s`, "tag hf-abs");
+          K.tl.set(tg, { opacity: 1 }, Q(t)); K.tl.set(tg, { opacity: 0 }, Q(t + 1.4));
+        });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

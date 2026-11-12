@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="takeover" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff">
+      <img id="room" src="assets/room.jpg" alt="" />
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (kit/hf/demos/takeover/build.py): takeovers and every transition kind on one canvas in look D.look. His
+      // shape is a still (assets/room.jpg) so every frame seeks the same; made-up copy, a generic mock UI, no numbers.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["takeover"] = tl;                                        // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "takeover", width: 1920, height: 1080, words: [], pieces: D.pieces });
+        const el = K.el, T = D.total;
+        const P9 = (c, r) => [960 + 1920 * c, 540 + 1080 * r];
+        const S0 = P9(0, 0), S1 = P9(1, 0), S2 = P9(2, 0), S3 = P9(2, 1), S4 = P9(1, 1), S5 = P9(0, 1);
+        const C = HF.canvas(K, ROOT, { w: 5760, h: 3240, x: S0[0], y: S0[1], z: 1, look: D.look });
+        const HC = HF.C, TR = HF.trans(K, C);
+        const st = (a, b, pos) => C.station(a, b, "mid", pos);
+        const kick = (s) => `<div class="mono" style="font:500 27px/1 ${HF.F.mono};letter-spacing:.14em;text-transform:uppercase;color:${HC.sub}">${s}</div>`;
+        const t1 = (s, size = 56) => `<div class="cv-t" style="font-size:${size}px;line-height:1.08;margin-top:22px">${s}</div>`;
+        const pad = (inner) => `<div style="padding:40px 44px">${inner}</div>`;
+
+        // ---------------------------------------------------------------- 0-6 the hook: his card beside one line
+        const F0 = st(0, 6.7, S0);
+        el(F0, "left:130px;top:330px;width:900px", `${kick("the whole edit")}<div class="cv-t" style="font-size:92px;line-height:1.02;margin-top:26px">One take in.<br>One film out.</div>`);
+        C.chip(F0, 130, 640, `${HF.icon("video", 30, HC.sub, 2)} <span>recorded once</span>`, 0.8);
+        C.hold(0, 6, 0.03);
+
+        // ---------------------------------------------------------------- 6 whip -> three cards; 9.5 zoom into "plan"
+        const F1 = st(5.9, 9.6, S1);
+        C.cam(6, { x: S1[0], y: S1[1], z: 1 }, { dur: 0.55, ease: "expo.inOut", beat: false });
+        const cards = [["step one", "Record"], ["step two", "Plan"], ["step three", "Render"]].map(([k, t], i) =>
+          C.card(F1, 140 + i * 450, 330, 400, 300, 6.4 + i * 0.3, { html: pad(kick(k) + t1(t, 64)), ry: 0, fromRy: -12, drift: false, sfx: i ? false : undefined }));
+        C.hold(6.6, 9.2, 0.03);
+        // takeover 1 (type): the camera dives into the middle card and cuts to the statement; his card fades back after
+        C.takeover(9.5, 13.5, { kind: "type", in: "zoom", from: cards[1], kicker: "the rule", text: "Neat beats busy.",
+          mark: { word: 0, t: 11.2, kind: "underline" }, sub: "one idea on screen, the camera does the rest", out: "fade" });
+        C.cam(12, { x: S2[0], y: S2[1], z: 1 }, { dur: 0.01, sfx: false });            // moved under the plate (not a transition)
+
+        // ---------------------------------------------------------------- 15 his card is back; 18 a zoom-through to S3
+        const F2 = st(13.4, 18.1, S2);
+        C.card(F2, 130, 300, 900, 300, 13.8, { html: pad(kick("why it works") + t1("The camera carries the energy", 60)), ry: 0, fromRy: -10, drift: false });
+        const chip2 = C.chip(F2, 130, 660, `${HF.icon("zap", 30, HC.sub, 2)} <span>not more elements</span>`, 14.6);
+        C.hold(13.7, 17.7, 0.03);
+        TR.zoomThrough(18, chip2, S3, { why: "dive into the detail" });
+
+        // ---------------------------------------------------------------- 18-21 S3; 21 his card becomes the list card
+        const F3 = st(17.9, 21.6, S3);
+        C.card(F3, 980, 330, 820, 320, 18.4, { html: pad(kick("two takes") + t1("One edit, whole sentences", 58)), ry: 0, fromRy: 10, drift: false });
+        C.hold(18.5, 21, 0.03);
+        C.takeover(21, 25, { kind: "list", in: "card", kicker: "what the kit does", title: "Three things",
+          items: [["cuts on whole sentences", 21.7], ["moves the camera on you", 22.4], ["leaves when it helps", 23.0]],
+          out: "zoom", into: (p) => p.rows[2], to: S4 });
+
+        // ---------------------------------------------------------------- 25 S4: his seated frame; 31 the chapter beat
+        const F4 = st(24.9, 31.1, S4);
+        C.hold(25.5, 30.8, 0.02);
+        TR.chapter(31, 32.8, { num: "02", title: "The pipeline", to: S5 });
+
+        // ---------------------------------------------------------------- 32.8 S5; 36 the evidence; 45.5 the diagram
+        const F5 = st(32.7, T + 1, S5);
+        C.card(F5, 130, 300, 860, 300, 33.2, { html: pad(kick("the edit") + t1("Built as a page, seen as a film", 56)), ry: 0, fromRy: -10, drift: false });
+        const chip5 = C.chip(F5, 130, 660, `${HF.icon("git-branch", 30, HC.sub, 2)} <span>four parts</span>`, 33.8);
+        C.hold(33.3, 35.8, 0.03);
+        const row = (n, s, on) => `<div style="display:flex;gap:26px;align-items:baseline;padding:14px 40px;font:500 32px/1.3 ${HF.F.mono};color:${on ? HC.ink : HC.sub}"><span style="color:${HC.mute};width:44px">${n}</span><span>${s}</span></div>`;
+        const mock = `<div style="padding:30px 0">${row("01", "cut.py: whole sentences only")}${row("02", "lens: push, pull, arc, settle")}${row("03", "takeover: he steps out, the scene steps in", true)}${row("04", "mix: one calm bed under the voice")}${row("05", "render: 4K, one job at a time")}</div>`;
+        C.takeover(36, 40, { kind: "evidence", in: "cut", url: "localhost:3000/edit", html: mock, mark: [26, 154, 1060, 60], markAt: 37.2,
+          note: "a mock-up made for this check, not a real screen", out: "card" });
+        C.hold(40.3, 45.2, 0.03);
+        C.takeover(45.5, 49.5, { kind: "diagram", in: "match", match: chip5, title: "four parts, one page",
+          nodes: [{ id: "rec", label: "Record", icon: "video", at: 45.5 }, { id: "plan", label: "Plan", icon: "list", at: 46.2 },
+            { id: "edit", label: "Edit", icon: "scissors", at: 46.9 }, { id: "out", label: "Render", icon: "film", at: 47.6 }],
+          edges: [["rec", "plan", 46], ["plan", "edit", 46.7], ["edit", "out", 47.4]], out: "fade" });
+        C.hold(49.8, T, 0.03);
+
+        // ---------------------------------------------------------------- him: a card or a circle, never cut out
+        const SRC = D.src, AT = D.at;
+        // s: 1.1x over cover (a card's default crop is a tight face crop, past the 1.2x a 1080p source allows)
+        const card = (x, y, w, h, extra = {}) => Object.assign({ mode: "card", x, y, w, h, r: 32, at: AT, s: 1.1 * Math.max(w / SRC[0], h / SRC[1]) }, extra);
+        C.speaker("room", [
+          { t: 0, ...card(1450, 540, 620, 760) },                                                          // the hook: his face
+          { t: 6, ...card(1690, 860, 300, 300, { r: 150 }), dur: 0.55, ease: "expo.inOut", sfx: false },  // a circle under the whip
+          { t: 18, ...card(440, 560, 560, 700), cut: true },                                               // on the zoom's cut
+          { t: 25, mode: "frame", at: AT, cut: true },                                                   // seated, a large card
+          { t: 32.8, ...card(1450, 540, 600, 740), cut: true },
+          { t: 41, ...card(1560, 640, 460, 460, { r: 230 }), dur: 0.6, ease: HF.E.move, sfx: false },   // a circle while the canvas holds
+          { t: 45, ...card(1450, 540, 600, 740), dur: 0.45, ease: "expo.inOut", sfx: false },
+          { t: 53.5, ...card(1690, 860, 300, 300, { r: 150 }), dur: 0.6, ease: HF.E.move, sfx: false },
+        ], { src: SRC, at: AT, head: SRC[0] * 0.3, lens: {} });
+
+        K.finish(T);
+      })();
+    </script>
+  </body>
+</html>

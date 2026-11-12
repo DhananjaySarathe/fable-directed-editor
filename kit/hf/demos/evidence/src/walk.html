@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="evwalk" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: a screenshot of our own precheck run (assets/term.png, 1600x900, made by build.py --walk), walked two ways
+      // (D.variant): "together" = sd.zoom + sd.cursor keyed at the same times (today's usual call), "walk" = sd.walk
+      // (the cursor leads, the camera follows). Same steps, same times. A test page, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["evwalk"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "evwalk", width: 1920, height: 1080, words: [], pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.3, chrome: { left: "fixture · " + D.variant, badge: "1080p" }, sections: [[0, "screen · cursor + camera"]] });
+        S.beat(0, "graphic");
+        const L = S.layer(0.2, D.total, S.BACK, { read: true });
+        const sd = HF.screen(K, L, { x: 200, y: 90, w: 1520, h: 900, chrome: "none", img: "assets/term.png", srcW: 1600, srcH: 900, fit: "contain" });
+        sd.show(0.3);
+        // the steps (source px): the WARN summary, then the "read" finding, then back to the whole terminal
+        const steps = [{ t: 2.2, at: [120, 180], zoom: [30, 150, 760, 60], why: "the summary" },
+                       { t: 5.4, at: [210, 268], zoom: [30, 240, 1080, 60], why: "the read finding" },
+                       { t: 8.4, at: [700, 420], zoom: null }];
+        if (D.variant === "walk") sd.walk(steps, { until: D.total - 0.3, from: [1300, 700] });
+        else {                                                                    // camera and pointer keyed together
+          steps.forEach((s) => s.zoom === null ? sd.reset(s.t - 0.1) : sd.zoom(s.t - 0.1, s.zoom));
+          sd.cursor([{ t: 1.45, x: 1300, y: 700 }, { t: 2.1, x: 120, y: 180 }, { t: 4.7, x: 120, y: 180 }, { t: 5.3, x: 210, y: 268 }, { t: 7.7, x: 210, y: 268 }, { t: 8.3, x: 700, y: 420 }],
+            { clicks: [2.1, 5.3, 8.3], until: D.total - 0.3 });
+        }
+        S.box({});
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

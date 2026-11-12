@@ -1,0 +1,40 @@
+{
+  "name": "preset_documentary",
+  "first_used": "built 2026-10-24 for films/not-ai-made (the pilot: 'Can AI Build a Website That Doesn't Look AI-Made?'); reference Clueso's Series A film (youtu.be/cd1tAlb3wWM); not yet approved on a sample",
+  "use_only_when": "the owner asks for a Netflix-style / documentary / mockumentary film. NEVER the default: tutorials, explainers and every other talking-head edit stay on preset_whitespace (or the preset he names)",
+  "switch": "film.py PRESET = \"documentary\" (kit/film/config.py). Without it, DOC, J/L cuts on KEEP and every doc gate are refused or off",
+  "engine": "kit/hf/doc.js HF.doc(K, ROOT, { aroll }) on the page (inlined only when the page calls it); kit/film/doc.py for cutaways, J/L cuts, natural sound and D.doc",
+  "format": { "page": [1920, 1080], "render": "4K (chunked) for the final, 1080p drafts", "fps": "the film's FPS: 25 recommended for the camera footage (50 Hz lights), 60 kept if he says so" },
+  "grade": { "look": "doc (kit/look/looks.py): cinematic S-curve, slightly desaturated, warm highlights / cool shadows, light halation and grain, NO vignette, no background stops, no matte", "pick": "kit/film grade --sheet on a test clip shot in setup A, beside 'cinematic' and 'moody' (vignette 0)", "broll": "the same look baked as a LUT (DOC grade=\"doc\"); grade=False per screen recording" },
+  "palette": { "world": "#000000", "ink": "#F2EEE6", "ink2": "#BDB7AD", "sub": "#A39D93", "accent": "#E0B25A (the lower-third rule, a result that matters)", "ok": "#7FC79A", "bad": "#E0705A" },
+  "type": {
+    "name": "Inter 700, 44 px, caps, +0.14 em (lower-third name)",
+    "role": "Inter 500, 32 px, ink2 (lower-third role)",
+    "chapter": "Instrument Serif 400, 120 px, sentence case; sub JetBrains Mono 500, 34 px, caps, +0.18 em",
+    "stamp": "JetBrains Mono 500, 34 px, caps, +0.16 em, typed on (DAY 1 · 23:10)",
+    "subtitles": "Inter 500, 40 px, white, soft black shadow, one line at the bottom (replaces word-by-word captions)",
+    "min_px": 32
+  },
+  "speaker": {
+    "rule": "full frame in his real room (an interview at a 3/4 angle, eyes past the lens) or off screen (a cutaway, a chapter card, a results board, screen work). Never cut out, never in a designed world, never in a card or circle over graphics (that is the tutorial grammar)",
+    "camera": "one slow move per shot: a push of 2-6 % across the answer, then a pull on the next shot, about the face; capped by tracks.json (soft_zoom) and x1.3",
+    "guests": "each guest is a source with speaker= and role= (a lower-third on their first shot); written consent before posting (OWNER_DEFAULTS §6)"
+  },
+  "cutaways": {
+    "what": "inserts (hands, the room, the location, the phone), verite (him working), screen recordings: DOC broll in film.py, cut on the frame grid, graded with the doc LUT",
+    "length_s": [2.5, 8],
+    "sound": "audio=\"natural\" for room sound under the voice (ducked under speech), 'mute' for inserts that carry no sound",
+    "jl": "J/L cuts on KEEP ({'j': s} / {'l': s}): the sound leads or trails the picture by 0.3-1.0 s at a change of scene or speaker"
+  },
+  "structure": "cold open (the stakes, may open on footage that is not his face; his face by 5 s) -> chapters with black title cards -> time stamps on the work -> the test -> the verdict -> a 2.5 s end card with both handles (kit/brand.json)",
+  "gates": {
+    "precheck --doc": "still MEDIUM 10 s / HIGH 15 s (normal: 6 / 10); away HIGH only past 30 s; one dominant layout (full-frame interviews) MEDIUM, not HIGH",
+    "unchanged": "every other precheck check, cutcheck, joins/relisten (on the voice alone: work/vo_voice.wav), qa.py and the fresh critic"
+  },
+  "music": {
+    "rule": "OWNER_DEFAULTS §4 holds: calm beds ~18 dB under speech, the v11 voice duck, no drops; the bed steps back for natural sound (it ducks on vo.wav, which carries it) and between chapters",
+    "beds": ["calm/calm__mixkit__piano-reflections.mp3", "calm/calm__mixkit__relaxation-04.mp3", "calm/calm__mixkit__tides-turning.mp3", "emotional/emotional__mixkit__dreaming-big.mp3"],
+    "tension_unverified": ["suspense/suspense__mixkit__running-out-of-time.mp3", "suspense/suspense__mixkit__dark-shadows.mp3"],
+    "tension_note": "not yet put through the §4 bed test (pulse clarity, low-end share): measure before using under speech"
+  }
+}

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="rldemo" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#FBFAF6">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: every Redline component on one 16:9 page (kit/hf/demos/redline/build.py). Made-up words, a still camera,
+      // real published screens. A check page for the look, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["rldemo"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "rldemo", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 6 });
+        const R = HF.redline(S, st, { sections: [[0, "01 — the build"], [20, "02 — the wall"], [31, "03 — the verdict"]] });
+        const [a0, a1] = D.w.a, [b0, b1] = D.w.b, [c0, c1] = D.w.c, [d0, d1] = D.w.d;
+
+        // the speaker: his room in a framed window beside the page, a corner window over a figure, off for full screens
+        R.face([{ t: 0, at: "off" }, { t: 6, at: "right" }, { t: 12.9, at: "pip" }, { t: 20, at: "off" }, { t: 27, at: "left" },
+          { t: 31, at: "pip" }, { t: 37, at: "off" }, { t: 40, at: "full" }, { t: 43, at: "off" }], { at: [960, 700], faceY: 0.5 });
+
+        // 1. the title card: the thumbnail's page (headline, the one red stroke, two or three sketches of what the video
+        // actually uses, his face peeking up at the title)
+        R.card(0, 6, { title: "github/*reverse-engineer*", sub: "Complete app  ·  6 hours", align: "center", y: 110, size: 136, markAt: 0.55,
+          icons: [["terminal", 110, 560, 230], ["window", 1520, 470, 290], ["git", 1600, 800, 130]],
+          links: [[[360, 690], [560, 760]], [[1530, 800], [1360, 860]]],
+          peek: { src: "assets/peek.png", w: 800 } });
+
+        // 2. his words beside him: they land as he says them; the pen underlines the claim as he finishes it
+        { const L = R.page(6, 12.9);
+          R.say(L, a0, a1, { x: 120, y: 330, w: 840, size: 84, mark: [a1 - 2, a1 - 1, a1] }); }
+
+        // 3. a real screen as a figure (75 % wide, Fig. caption), zoomed only to read, marked on the tracing sheet
+        { const L = R.page(12.9, 20);
+          const f = R.fig(L, 120, 120, 1260, 788, { img: "assets/site.png", srcW: 2880, srcH: 1800, caption: "example.com, the landing page" });
+          f.place(12.95, 20);
+          f.look(14.0, [60, 150, 1440, 900], { pad: 0, until: 19.6, why: "the headline" });
+          f.sheet(15.6, 19.8);
+          f.mark("circle", [818, 425, 582, 128], 16.0, { pad: 8 });
+          f._sheets[0][2].note([1190, 905], "their claim", 16.8, { size: 66, to: [930, 372] }); }
+
+        // 4. full-bleed evidence: the frame is the screen; the sheet frosts everything but the line he is reading
+        { const L = R.page(20, 27);
+          const f = R.fig(L, 0, 0, 1920, 1080, { img: "assets/limit.png", srcW: 1500, srcH: 1220, bleed: true, caption: "Gemini, day 1, 2:10 am" });
+          f.place(20.02, 27, { instant: true });
+          f.look(20.6, [40, 900, 1440, 330], { until: 26.6, why: "the limit" });
+          const sh = f.sheet(22.2, 26.6, { window: [60, 985, 1400, 185] });
+          f.mark("underline", [100, 1012, 540, 46], 22.8);
+          sh.note([820, 905], "6 hours in.", 23.4, { size: 74, rotate: -3 }); }
+
+        // 5. one number that matters, beside him, with where it came from; the circle is the pen's
+        { const L = R.page(27, 31);
+          R.stat(L, 1020, 330, "6h", "from an idea to a live app", 27.4, { src: "my screen recording, day 1", markAt: 28.2 }); }
+
+        // 6. the verdict: two columns, each with its evidence, a pencil rule between, the pen circles his pick
+        { const L = R.page(31, 37);
+          R.compare(L, 120, 130, 1320, 800, { title: "Claude Code", lines: ["one sitting"], at: 31.2, img: "assets/site.png", srcW: 2880, srcH: 1800, w: 600, caption: "shipped" },
+            { title: "Gemini", lines: ["hit the limit"], at: 31.7, img: "assets/limit.png", srcW: 1500, srcH: 1220, w: 600, caption: "stopped", look: [40, 900, 1440, 330] },
+            { winner: "left", winnerAt: 33.3 }); }
+
+        // 7. a time skip: struck through, rewritten by hand
+        R.skip(37, 40, { from: "02:10", to: "08:40", note: "the second pass" });
+
+        // 8. plain talking head, with one handwritten slip in a corner of his room
+        R.slip(1380, 150, "the bug was mine", 40.4, { until: 43 });
+
+        // 9. the end card: the two end-screen slots in pencil, the handles from kit/brand.json, his face peeking
+        R.endCard(43, D.total, { peek: { src: "assets/peek.png", w: 440 } });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

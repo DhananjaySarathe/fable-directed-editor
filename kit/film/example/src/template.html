@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="filmexample" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <!-- the cut's picture track (kit/film/cut.py: work/aroll.mp4, linked into assets/ by kit/film/build.py) -->
+      <video id="aroll" class="clip" src="assets/aroll.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // kit/film example (a check film on ffmpeg's test pattern and a synthetic voice; kit/film/example/film.py). The scenes
+      // follow visual_plan.json and are timed to word ids (W(id) = the word's start on the cut), so a re-cut moves them.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["filmexample"] = tl;                                    // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "filmexample", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.talk, chrome: { left: "kit/film · example", badge: "test pattern" },
+          sections: [[0, "the cold open"], [K.W(0) - 0.1, "01 · before"], [K.W(41) - 0.1, "02 · a film now"], [K.W(60) - 0.1, "03 · the kit"]] });
+        const { C, W, layer, say, line, beat, ui } = S;
+
+        // p1 0-2.2 the cold open: the stakes on frame 1, the face as a hero card, his words under it
+        beat(0, "hero");
+        { const L = layer(0, W(0) - 0.25);
+          say(L, 10041, 10046, { x: 160, y: 898, w: 1600, size: 96, align: "center", stress: [10045, 10046] }); }
+
+        // p2 2.2-10.3 every film copied its scripts: a sketch of three films, each with its own copy
+        beat(W(0) - 0.15, "beside", { side: "right" });
+        { const L = layer(W(0) - 0.1, W(33) - 0.2);
+          const sk = HF.sketch(K, L, { x: 990, y: 90, w: 860, h: 600, seed: 7 });
+          [["a", 90, "film 1"], ["b", 290, "film 2"], ["c", 490, "film 3"]].forEach(([id, y, label]) =>      // x, y: node centres
+            sk.node(id, { x: 170, y, w: 280, h: 120, label }));
+          [["ea", 90], ["eb", 290], ["ec", 490]].forEach(([id, y]) => sk.node(id, { x: 620, y, w: 380, h: 120, label: "its own copy", fill: C.accTint }));
+          sk.arrow("aa", "a", "ea"); sk.arrow("ab", "b", "eb"); sk.arrow("ac", "c", "ec");
+          sk.draw(["a", "aa", "ea"], W(0), { stagger: 0.25 });
+          sk.draw(["b", "ab", "eb"], W(7), { stagger: 0.2 });
+          sk.draw(["c", "ac", "ec"], W(12), { stagger: 0.2 });
+          line(L, "*2,000* lines of edit code,|copied film to film", W(16) - 0.05, { x: 1000, y: 760, w: 860, size: 64 }); }
+
+        // p3 10.4-12.7 the same bugs again: a stickman holds his head
+        beat(W(33) - 0.15, "aside", { side: "left" });
+        { const L = layer(W(33) - 0.1, W(41) - 0.2);
+          line(L, "the same bugs, *again*", W(33), { x: 110, y: 150, w: 1000, size: 92 });
+          const sv = S.svgLayer(L);
+          const fig = Stickman.create(sv, { x: 560, ground: 930, scale: 1.25 });
+          fig.set("type"); fig.to(W(36), "handsOnHead", 0.3); fig.to(W(39), "facepalm", 0.4); }
+
+        // p4 13.0-17.4 now a film is three files: a checklist ticks on each one's word; he goes up into the corner (the
+        // layout gate, OWNER_DEFAULTS §1: a card beside was 49 % of the film)
+        beat(W(41) - 0.15, "corner", { side: "left" });
+        { const L = layer(W(41) - 0.1, W(60) - 0.25, S.BACK, { read: true });
+          line(L, "a film is *three files*", W(41), { x: 110, y: 120, w: 760, size: 72 });
+          ui.checklist(L, 110, 300, 720, { title: "the recipe", items: ["the cut list · film.py", "the scene plan", "the template"],
+            at: W(42), per: 0.2, done: { 0: W(48), 1: W(51), 2: W(55) }, size: 36 }); }
+
+        // p5 17.6-23.1 the kit does the rest: one container through its states (cut -> on the grid -> re-listened)
+        beat(W(60) - 0.15, "graphic");
+        { const L = layer(W(60) - 0.1, W(80) - 0.2);
+          line(L, "the kit does *the rest*", W(60), { x: 110, y: 110, w: 1700, size: 90 });
+          const row = (txt, col) => `<div style="position:absolute;left:56px;top:70px;font:800 54px/1.15 ${HF.F.body};color:${col}">${txt}</div>`;
+          const sub = (txt) => `<div style="position:absolute;left:56px;top:170px;width:1060px;font:500 36px/1.35 ${HF.F.body};color:${C.text}">${txt}</div>`;
+          S.flow(L, { states: [
+            { at: W(61), x: 380, y: 360, w: 1160, h: 220, html: row("your cut list", C.ink) },
+            { at: W(66), x: 380, y: 330, w: 1160, h: 300, html: row("every cut on the frame grid", C.acc) + sub("1/30 s") },
+            { at: W(75), x: 380, y: 330, w: 1160, h: 220, html: row("✓ every join re-listened", C.ok) },
+          ], until: W(80) - 0.25 }); }
+
+        // p6 23.1-28.0 build, mix, render: one command each, lit on its word. The takeover goes on from p5 (he stays off,
+        // 10.4 s away in all): the terminal has the whole frame
+        { const L = layer(W(80) - 0.1, W(96) - 0.2);
+          const cw = HF.code(K, L, { x: 360, y: 230, w: 1200, h: 420, title: "terminal", lang: "sh", size: 40,
+            lines: ["python -m kit.film films/x build", "python -m kit.film films/x mix", "python -m kit.film films/x render"] });
+          cw.show(W(80)); cw.highlight(W(81), [1, 1]); cw.highlight(W(84), [2, 2]); cw.highlight(W(91), [3, 3]);
+          line(L, "in *chunks*", W(94) - 0.1, { x: 360, y: 730, w: 1200, size: 70 }); }
+
+        // p7 28.1-32.3 Reels from the finished film, a whole sentence at a time: the sentences a Reel takes
+        beat(W(96) - 0.15, "aside", { side: "right" });
+        { const L = layer(W(96) - 0.1, W(111) - 0.2);
+          line(L, "Reels from the *finished film*", W(96), { x: 780, y: 120, w: 1080, size: 76 });
+          // two of its sentences, not three: one idea per frame (precheck's density gate, at most 3 groups up)
+          ui.numbered(L, [["1", "Now a film is|three files."], ["2", "A cut list,|a scene plan|and a template."]],
+            { x: 780, y: 310, w: 500, h: 370, gap: 40, at: W(98) }); }
+
+        // p8 32.4-35.9 one command per step, nothing copied: back to the face, the verdict stamps
+        beat(W(111) - 0.15, "punch");
+        { const L = layer(W(111) - 0.1, D.total, S.FRONT);
+          say(L, 111, 115, { x: 110, y: 850, w: 1100, size: 84, color: "#fff", shadow: true }); }
+        ui.stamp("NOTHING COPIED", 1150, 690, W(117), { size: 88, out: D.total - 0.15 });
+
+        if (window.Stickman) Stickman.drive(tl, D.total);
+        S.box();
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "paper_collage",
+  "status": "new 2026-10-11, not yet used on a real film",
+  "formats": ["9:16 Reel/Short (primary)", "16:9 inserts"],
+  "palette": { "paper": "#eee4cf", "paperLight": "#f6f1e4", "ink": "#121212", "red": "#d6452f", "ticket": "#f2c84b", "tape": "rgba(226,208,164,.94)", "captionHighlight": "#e0457b" },
+  "fonts": { "stamp": "Anton", "label": "JetBrains Mono (typewriter)", "hand": "Caveat", "news": "Georgia (texture only)", "caption": "Montserrat 800/900" },
+  "text_floor_px": { "9:16": 36, "16:9": 32 },
+  "timing": { "beat_s": [0.8, 1.6], "hero_hold_min_s": 1.5, "stamp_line_gap_s": [0.3, 0.45], "throw_in_spring": "snappy" },
+  "components": "kit/hf/paper.js (HF.paper) + kit/hf/annotate.js (red marker) + kit/hf/collage.js (torn pieces, halftone)",
+  "objects": "kit/look/objects.py (Apple Vision cut-outs via kit/bin/fgcut)",
+  "reference": "instagram.com/p/Dcblnu1gyAP (fliki), studied frame by frame 2026-10-11"
+}

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+    <style>
+      .tag { position: absolute; right: 56px; top: 44px; padding: 10px 18px; border-radius: 999px; background: rgba(27, 24, 21, 0.86); color: #f3eee6;
+        font: 500 20px "JBMono", monospace; white-space: nowrap; opacity: 0; z-index: 30; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="explaindemo" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="__TAKE_AT__" data-duration="__TAKE_DUR__" data-media-start="__TAKE_MEDIA__" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["explaindemo"] = tl;                                         // the linter looks for this line
+        const K = HF.kit({ tl, id: "explaindemo", width: 1920, height: 1080 });
+        const st = HF.stage(K, document.getElementById("root"), { aroll: "aroll" });
+        const C = HF.C, Q = K.Q, S = D.seg;
+        const layer = (a, b) => { const L = K.el(st.cards, "left:0;top:0;width:1920px;height:1080px;transform-origin:50% 50%"); K.show(L, Math.max(0, a - 0.02), b); K.drift(L, a, b, 1.06); return L; };
+        const tag = (t, text, hold = 2.2) => { const g = K.el(st.top, "", text, "tag hf-abs"); tl.set(g, { opacity: 1 }, Q(t)); tl.set(g, { opacity: 0 }, Q(t + hold)); };
+
+        // 1 · next-word probabilities (GPT-2, real numbers from kit/hf/tools/nexttoken.py)
+        { const [a, b] = S.tokens, L = layer(a, b);
+          const T = HF.tokens(K, L, { x: 260, y: 130, w: 1400, fs: 72, data: D.tokens, t: a, enter: false, step: 1.3,
+            temps: [{ at: a + 7.4, T: 1.8 }, { at: a + 8.7, T: 0.7 }] });
+          tag(a + 0.3, "HF.tokens · next-word probabilities", 3);
+          K.exit(T.wrap, b - 0.35); }
+
+        // 2 · exploded layer stack
+        { const [a, b] = S.stack, L = layer(a, b);
+          const h = K.words(L, "What's inside an AI *coding tool", "left:120px;top:96px;font-size:84px"); K.rise(h.ws, h.ws.map((_, i) => a + 0.1 + i * 0.08));
+          HF.stack(K, L, { cx: 720, cy: 640, w: 470, t: a + 0.4, explodeAt: a + 1.3, labelW: 520, fs: 50,
+            layers: [{ label: "The model", sub: "predicts the next token" }, { label: "The harness", sub: "the loop: plan, act, check" }, { label: "Tools", sub: "files, terminal, browser" },
+              { label: "Connectors", sub: "MCP: your apps and data" }, { label: "Your project", sub: "what you actually see" }],
+            focus: [{ at: a + 3.5, i: 1 }], focusEnd: a + 4.7, collapseAt: a + 5.3 });
+          tl.to(h.box, { opacity: 0, duration: 0.2 }, Q(b - 0.3));
+          tag(a + 0.3, "HF.stack · exploded layers", 3); }
+
+        // 3 · the face hands over to a screen that tilts flat ("let me show you")
+        { const [a, b] = S.screen, L = layer(a, b);
+          const h = K.words(L, "let me *show you.", "left:820px;top:52px;font-size:72px"); K.rise(h.ws, [a + 1.4, a + 1.55, a + 1.7]);
+          const sd = HF.screen(K, L, { x: 800, y: 170, w: 1040, h: 610, chrome: "browser", url: "example.com/dashboard", img: "assets/shot.jpg", srcW: 1728, srcH: 941 });
+          sd.tilt(a + 1.6, b - 0.3);
+          sd.zoom(a + 3.6, [880, 60, 700, 200]);
+          sd.highlight(a + 4.4, [1152, 118, 168, 54], { until: b - 0.5, label: "start here" });
+          tag(a + 1.6, "HF.tiltIn · screen swings flat", 2.6); }
+
+        // 4 · leaderboard race (real Arena code-board snapshots, kit/hf/tools/arena_race.py)
+        { const [a, b] = S.race, L = layer(a, b);
+          HF.race(K, L, { x: 240, y: 210, w: 1440, rowH: 92, data: D.race, t: a + 0.6, dur: 8.6, highlight: "Anthropic",
+            title: "Arena <i>code</i> leaderboard, 2026" });
+          tag(a + 0.4, "HF.race · leaderboard race", 3); }
+
+        // 5 · scramble / decode, then a glint through the letters
+        { const [a, b] = S.scramble, L = layer(a, b);
+          const lb = K.el(L, "left:0;width:1920px;top:330px;text-align:center;opacity:0", "#1 on the code board, 7 Oct 2026", "hf-lbl hf-abs"); K.enter(lb, a + 0.2, { y: 10 }, 0.35);
+          const nm = K.el(L, "left:0;width:1920px;top:400px;text-align:center;font-size:190px", "", "hf-serif hf-abs");
+          HF.scramble(K, nm, "Claude Opus 5.5", a + 0.6, { dur: 1.0 });
+          HF.sweep(K, nm, a + 2.0, { mode: "text", base: C.ink, color: C.acc, dur: 0.9 });
+          tag(a + 0.6, "HF.scramble + HF.sweep text", 2.6); }
+
+        // 6 · light sweep on a card, a beam round another
+        { const [a, b] = S.sweep, L = layer(a, b);
+          const best = D.race.series.find((s) => s.name === "Anthropic"), v = best.values[best.values.length - 1];
+          const c1 = HF.card(K, L, 220, 300, 680, 440, "", "background:#fff"), c2 = HF.card(K, L, 1020, 300, 680, 440, "", "background:#fff");
+          c1.innerHTML = `<div class="hf-lbl" style="position:absolute;left:48px;top:44px">best Arena code score</div><div class="hf-serif" style="position:absolute;left:44px;top:96px;font-size:200px">${v}</div><div style="position:absolute;left:48px;top:340px;font:600 26px Inter,sans-serif;color:${C.mute}">Anthropic · ${D.race.dates[D.race.dates.length - 1]}</div>`;
+          const s0 = D.tokens.steps[0];
+          c2.innerHTML = `<div class="hf-lbl" style="position:absolute;left:48px;top:44px">GPT-2's next word</div><div class="hf-serif" style="position:absolute;left:44px;top:96px;font-size:200px">${Math.round(s0.chosen_p * 100)}%</div><div style="position:absolute;left:48px;top:340px;font:600 26px Inter,sans-serif;color:${C.mute}">for “${HF.esc(s0.chosen.trim())}”, its top pick</div>`;
+          K.enter(c1, a + 0.2, { y: 40 }); K.enter(c2, a + 0.35, { y: 40 });
+          HF.sweep(K, c1, a + 1.2, { mode: "glare" });
+          HF.sweep(K, c2, a + 2.4, { mode: "beam", dur: 1.6 });
+          tag(a + 1.2, "HF.sweep · glare", 1.2); tag(a + 2.4, "HF.sweep · beam", 2.4); }
+
+        // the speaker box for segment 3 (its own video element, muted; off elsewhere)
+        const sc = S.screen;
+        HF.box(K, st, { face: D.face, sfx: true, shots: [{ t: 0, at: "off" }, { t: sc[0], at: "full", in: "grow" }, { t: sc[0] + 1.5, at: "leftSmall", in: "shrink" }, { t: sc[1] - 0.45, at: "off", in: "slide" }] });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

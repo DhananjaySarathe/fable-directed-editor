@@ -1,0 +1,37 @@
+{
+  "name": "preset_pastel_box",
+  "first_used": "films/ai-workflows (2026-10-10)",
+  "format": { "page": [1920, 1080], "render": "3840x2160 (4k) or 1920x1080", "fps": 30 },
+  "palette": {
+    "paper": "#f6f1ec", "ink": "#17161f", "ink2": "#4d4b5c", "mute": "#8e8ba0",
+    "accent": "#4f3be0", "accentTint": "#ece9ff", "onVideoAccent": "#ffc9ad", "orb": "#ff7a3d", "warm": "#e2562b",
+    "ok": "#16a34a", "bad": "#d6455d",
+    "aurora": ["rgba(176,160,255,.85)", "rgba(255,190,160,.85)", "rgba(170,232,205,.75)", "rgba(255,226,170,.55)"]
+  },
+  "type": {
+    "display": "InstrumentSerif (rising word by word in masks; stressed words italic in the accent)",
+    "ui": "Inter 500-800", "labels": "JBMono 600, uppercase, 0.16em",
+    "sizes": { "overVideo": "92-110 px white with shadow, y 700-860", "headline": "100-130 px ink", "chapterTitle": "auto-fit, max 124 px" }
+  },
+  "motion": {
+    "layer": { "float_px": [14, 9], "float_rad_s": [0.66, 0.53], "push_per_s": 0.008, "push_cap": 0.07 },
+    "aurora_orbit_rad_s": [0.175, 0.15, 0.125, 0.2],
+    "wordRise": { "duration": 0.5, "exit": 0.24, "stagger_exit": 0.012 },
+    "chapterCard": { "wipe_in": 0.32, "wipe_out": 0.3, "drift_px": [150, 70], "type_scale": 1.04 },
+    "jumpPunch": 1.12,
+    "box": "HF.box director (kit/hf/box.js): hero, face, punch, beside, aside, graphic; collapse into a pill, flip, tiles at sections"
+  },
+  "chrome": { "corners": ["show · title", "section", "edited by claude · html · gsap", "timecode · 4k"], "progressBar": "6 px accent", "whiteOnlyOverVisibleVideo": true },
+  "audio": {
+    "voice": "DeepFilterNet3 (+ WPE dereverb when the room echoes) + a measured room EQ",
+    "beds": "one per chapter, on the chapter card, crossfade 0.2 s; a bookend track for the hook and the verdict",
+    "music_under_speech_db": -12, "music_in_gaps_db": -5, "master": { "lufs": -14, "true_peak": -1.5 },
+    "cues_per_minute": "about 20-23 after thinning"
+  },
+  "qa": {
+    "precheck": { "safe": [24, 20, 1896, 1060], "blank_s": 0.6, "face_zone": "42 % down the box" },
+    "freeze": "qa.py freezedetect n=0.003 d=0.8; budget 1 s per 30 s",
+    "draft": "1080p --quality draft, ~3.5 min for 5 min (critic + qa on it)",
+    "final": "4k delivery ~18 min (capture 8 + encode 10)"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "name": "preset_canvas_studio",
+  "first_used": "films/chakra-redline v4 (2026-10-20), \"Yeah, it's a nice edit\"",
+  "default_for": "talking-head edits, 16:9 long-form and samples, unless another preset is named",
+  "format": { "page": [1920, 1080], "render": "1080p for previews and samples; 4K only for a final he asks for", "fps": 30 },
+  "canvas": {
+    "world": [5760, 3780], "stations": { "S1": [2880, 1620], "S2": [4800, 1620], "S4": [2880, 2700], "S5": [4800, 2700] },
+    "station_perspective_px": 2000, "parallax": { "bg": 0.2, "far": 0.75, "mid": 1, "near": 1.2 }
+  },
+  "palette": {
+    "seamless": "radial-gradient(ellipse 70% 75% at 50% 40%, #FFFEFC 0%, #F6F3EE 45%, #E9E4DB 100%)", "edge": "#EEEAE3",
+    "ink": "#16161C", "ink2": "#4A4A55", "mute": "#6b6b75", "grey_out": "#C9C9D2", "anchor_dark": "#16161C",
+    "accent_gradient": ["#6C5CE7", "#FF4D6D", "#FFB86B"],
+    "pastel": { "lilac": "#E7E1FF", "peach": "#FFE3D6", "mint": "#D9F2E6", "butter": "#FFF1C2", "sky": "#DCEBFF" }
+  },
+  "type": {
+    "headline": "Schibsted Grotesk 800, -0.02em: 42-52 px on cards, 44 px panel titles",
+    "label": "Atkinson Hyperlegible Next 700: 32-37 px (source lines 32 px)",
+    "hero": "Archivo Condensed 900 caps, fill 96-1824 px (6.12 em for GRINDING DSA -> 282 px)",
+    "page": "the real capture; the highlighter on his line"
+  },
+  "speaker": {
+    "rule": "never cut out: full screen or a closed shape (circle r = w/2, square, rounded card r 36) with his graded room",
+    "shapes": { "corner_circle": 260, "feature_circle": [520, 560], "card": [480, 680] },
+    "ring": "2 px white + 4 px violet 55 % + 42 px rose glow", "back_block": [30, 30, "lilac"],
+    "morph_s": [0.55, 1.1], "jump_punch": 1.12, "face_from_frame_1": true
+  },
+  "motion": {
+    "whip": { "dur": 0.55, "ease": "expo.inOut", "blur": "from camera speed, max 22 px" },
+    "push_through": { "dur": 0.4, "ease": "expo.in", "z": 2.6, "then": "hard cut" },
+    "overview": { "out": [0.6, "power3.inOut"], "z": 0.48, "beat": 0.25, "in": [0.6, "expo.inOut"] },
+    "hold_push": [0.03, 0.12], "card_land": { "dur": 0.9, "from": { "z": -420, "ry": -32, "blur": 10 }, "ease": "HF.E.in" },
+    "beam": { "dur": 0.45, "stagger": 0.15, "curve": 0.5, "w": 12, "glow": 10, "dot": true },
+    "hero": { "enter": "scale 1.6 -> 1, 0.5 s expo.out", "drift_px": -40, "strike": "28 px, 0.4 s power3.inOut", "grey": 0.35 },
+    "chart": "keys: flat part on landing, creep through hesitations, fall from the noun, land on the last word (pop + ring)",
+    "no_two_alike": "whip / push through / hard cut / overview / morph"
+  },
+  "layout": { "margin_px": 96, "gap_px": 70, "text_min_px": 32, "check": "kit/qa/measure.mjs after 3D and the camera" },
+  "facts": "every claim card: checked by search, a dated source line, <= 6 words; nothing unsourced",
+  "audio": {
+    "voice": "WPE dereverb when the room echoes, then DeepFilterNet3",
+    "bed": "one calm long-form bed (kit/music/calm, or one marked longform in kit/music/library.json), 18 dB under the voice on long-form and 12 on Reels (kit/film/mix.py defaults); v11 (films from 2026-10-22): it ducks on his voice and lifts only in pauses of 0.8 s or more (gap = under + 6), loops on its own phrases to fill the film and ends on the track's ending; HF.quiet dip (-10) on the hero line",
+    "bed_opt_in": "that v11 sound comes from kit/film's mix (python -m kit.film <film> mix). templates/build.py calls kit.audio.mix directly and stays on the v10 mix (Bed(under=-16, gap=-8), the word-mask duck, no loop, the old cue thinning) until it opts in: mix(..., sound=V11) (V11_REEL on 9:16) with Bed(..., under=-18, gap=-12, duck='voice'), and for a track shorter than the film segments=kit.audio.loop.plan(file, entry, start, need)['segments']",
+    "cues": { "camera_whoosh_db": [-22, -19], "pop_db": -24, "impact_db": -11, "beam_db": -22, "asked_per_min": "about 10-12 (v11: mix.py keeps 4-8 small cues a minute on long-form, 6-12 on Reels; each pop or whoosh rotates 2-3 loudness-matched files, no file over 25 % of the cues or 4 a minute; story sounds and keep cues always play)" },
+    "master": { "lufs": -14, "true_peak": -1.5 }
+  },
+  "qa": { "precheck": "0 HIGH (allow only an overview window)", "qa_py": "PASS at 1080p", "critic": "kit/qa/CRITIC.md, ledger per film" }
+}

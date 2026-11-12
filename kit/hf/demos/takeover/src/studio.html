@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="studio" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden">
+      <img id="aroll" src="assets/room169.jpg" alt="" />
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (kit/hf/demos/takeover/build.py): S.takeover on HF.studio { look: "whitespace" }. The box beat "takeover"
+      // takes him off and brings back his previous shape; the scenes sit on BACK under the box. Made-up copy.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["studio"] = tl;                                          // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "studio", width: 1920, height: 1080, words: [], pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.3, look: "whitespace", chrome: { left: "fixture · takeovers", badge: "1080p" } });
+        const { beat, layer, line, card } = S, T = D.total;
+        // 0-6: his face full, then beside a line
+        beat(0, "face");
+        beat(2.5, "beside", { side: "left" });
+        { const L = layer(2.5, 6); line(L, "One take in.|One film *out.", 2.7, { x: 120, y: 380, w: 900, size: 100 }); }
+        // 6-10: a statement takeover (a cut), he is back beside the content at 10
+        S.takeover(6, 10, { kind: "type", in: "cut", kicker: "the rule", text: "Neat beats busy.", mark: { word: 0, t: 7.6, kind: "underline" }, out: "fade" });
+        { const L = layer(10.2, 12.5); line(L, "The camera|carries *it.", 10.4, { x: 120, y: 380, w: 900, size: 100 }); }
+        beat(12.5, "hero");                                                          // his card centred under a title
+        { const L = layer(12.5, 16); line(L, "Not more *elements.", 12.7, { x: 0, y: 120, w: 1920, size: 96, align: "center" }); }
+        // 16-20.5: the list grows out of the pill (in "card": the box collapses), then his face full at 25.5
+        S.takeover(16, 20.5, { kind: "list", in: "card", kicker: "what the kit does", title: "Three things",
+          items: [["cuts on whole sentences", 17], ["moves the camera on you", 17.7], ["leaves when it helps", 18.4]], out: "fade" });
+        beat(25.5, "face");
+        S.box();
+        K.finish(T);
+      })();
+    </script>
+  </body>
+</html>

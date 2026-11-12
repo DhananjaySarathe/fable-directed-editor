@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="evflow" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE: prompt -> running -> result, the same three states and times built two ways (D.variant):
+      // "cards" = three separate cards (today's way), "flow" = one container (S.flow). The words are our own precheck
+      // run on the evidence fixture (2026-10-10): real output, not made up. A test page, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["evflow"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "evflow", width: 1920, height: 1080, words: [], pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.studio(K, ROOT, st, { end: D.total, talk: D.total - 0.3, chrome: { left: "fixture · " + D.variant, badge: "1080p" }, sections: [[0, "prompt → run → result"]] });
+        const { C, el, layer, land, leave, beat } = S;
+        const T = [0.6, 3.0, 5.2], UNTIL = 9.6;
+        const mono = "font:500 36px/1.3 JBMono,monospace;color:#17161f";
+        const H = [
+          `<div style="position:absolute;left:44px;top:40px;${mono}">› node kit/qa/precheck.mjs index.html</div>
+           <div style="position:absolute;right:28px;top:30px;padding:18px 30px;border-radius:999px;background:${C.acc};color:#fff;font:800 32px/1 Inter">Run</div>`,
+          `<div style="position:absolute;left:40px;top:0;height:110px;display:flex;align-items:center;gap:22px;font:700 36px/1 Inter;color:#fff;white-space:nowrap">
+             <span style="width:30px;height:30px;border-radius:50%;border:5px solid rgba(255,255,255,.3);border-top-color:#fff;display:inline-block"></span>precheck · 22 s at 5 fps</div>`,
+          `<div style="position:absolute;left:48px;top:40px;font:800 46px/1 Inter;color:#17161f">WARN <span style="color:${C.mute};font-weight:600">· 0 HIGH · 3 MEDIUM</span></div>
+           <div style="position:absolute;left:48px;top:120px;right:40px;font:500 34px/1.55 JBMono,monospace;color:#2a2935">
+             <div>small · 17 px · acme · dev card</div><div>read · 13 words up 0.8 s</div><div>small · 17 px · before the zoom</div></div>`];
+        const R = [{ x: 410, y: 420, w: 1100, h: 120, radius: 28, bg: "#ffffff" }, { x: 640, y: 425, w: 640, h: 110, radius: 55, bg: C.ink }, { x: 400, y: 300, w: 1120, h: 360, radius: 30, bg: "#ffffff" }];
+        beat(0, "graphic");
+        const L = layer(0.3, D.total);
+        if (D.variant === "flow") {
+          S.flow(L, { states: R.map((r, i) => Object.assign({ at: T[i], html: H[i] }, r, i === 1 ? { click: [0.92, 0.5] } : {})), until: UNTIL });
+        } else {                                                                    // today's way: a card per state
+          R.forEach((r, i) => {
+            const c = el(L, `left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;border-radius:${r.radius}px;background:${r.bg};overflow:hidden;box-shadow:0 40px 90px rgba(40,24,90,.16)`, H[i], "hf-abs ui");
+            land(c, T[i] + (i ? 0.05 : 0));
+            leave(c, i + 1 < T.length ? T[i + 1] - 0.05 : UNTIL);
+          });
+          S.ui.pointer(L, { from: [1700, 760], to: [1450, 480], at: T[1] - 0.75, dur: 0.6, clickAt: T[1] - 0.1, until: T[1] + 0.4 });
+        }
+        S.box({});
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

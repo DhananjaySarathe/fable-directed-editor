@@ -1,0 +1,279 @@
+{
+  "name": "preset_redline",
+  "first_used": "kit/hf/demos/redline (2026-10-19, stills only; not yet on a real film)",
+  "reference": "the owner's github/reverse-engineer thumbnail (2026-10-19): graph paper, heavy black grotesk, one red marker underline, pencil sketches, his face peeking from the bottom",
+  "format": {
+    "page": [
+      [
+        1920,
+        1080
+      ],
+      [
+        1080,
+        1920
+      ]
+    ],
+    "render": "3840x2160 (4k) long-form, 1080x1920 Reels",
+    "fps": "keep the take's (30 or 60)"
+  },
+  "palette": {
+    "paper": "#FBFAF6",
+    "grid": "#E6E6E1",
+    "ink": "#151515",
+    "ink2": "#3D3B37",
+    "grey": "#6F6D68",
+    "pencil": "#8F8C85",
+    "red": "#D7261E",
+    "highlighter": "#FFE45C (screens only, never in a frame that has red; optional)",
+    "sheet": "rgba(255,255,255,.06) + 1 px rgba(21,21,21,.16) edge",
+    "frost": "rgba(251,250,246,.90)"
+  },
+  "grid": {
+    "cell_px": 60,
+    "cells": {
+      "16:9": [
+        32,
+        18
+      ],
+      "9:16": [
+        18,
+        32
+      ]
+    },
+    "line_px": 1,
+    "margin_px": 120,
+    "moves": false
+  },
+  "type": {
+    "display": "Schibsted Grotesk 900 (800 for word-on-voice lines), tracking -0.03em, leading 0.95",
+    "text": "Atkinson Hyperlegible Next 500 / 700",
+    "labels": "Martian Mono 500, mixed case ('Fig. 2 — Gemini, day 1'), 21 px (26 px in 9:16): figure captions, sources, the section marker (first ~8 s of a section only)",
+    "hand": "Nanum Pen Script (red margin notes), 66-80 px",
+    "sizes": {
+      "headline_16x9": "136-150 px",
+      "headline_9x16": "116-128 px",
+      "say_16x9": "84-110 px",
+      "sub": "44-46 px",
+      "caption_9x16": "50 px",
+      "evidence_min": "28 px at 1080p long-form, 40 px on a Reel (after every zoom)"
+    },
+    "banned": [
+      "Inter as display",
+      "Instrument Serif",
+      "Space Grotesk",
+      "Caveat",
+      "Excalifont",
+      "Anton/Bebas/Oswald stamps",
+      "word-pop karaoke colour",
+      "emoji in captions"
+    ]
+  },
+  "pen": {
+    "color": "#D7261E",
+    "size_px": {
+      "16:9": 12,
+      "9:16": 13,
+      "headline": "max(12, 0.1 x font size)"
+    },
+    "blend": "multiply 0.92",
+    "meaning": {
+      "underline": "emphasis",
+      "circle": "look here",
+      "strike (+ a handwritten fix)": "wrong -> right",
+      "caret + note": "an addition",
+      "tick/cross": "verdict on a list point"
+    },
+    "budget": "one mark per sentence, three on screen at most, only on claim words",
+    "timing_s": {
+      "pen_down_after_word": 0.08,
+      "underline": 0.32,
+      "double": 0.55,
+      "circle": 0.6,
+      "strike": 0.28,
+      "arrow": 0.45,
+      "lift_between_strokes": 0.08
+    },
+    "shape": {
+      "underline_lead_in": "min(4 %, 22 px)",
+      "overshoot": "min(6 %, 36 px)",
+      "rise": "1.5 deg, max 12 px",
+      "bow": "0.6-1.2 % of the length",
+      "circle_start": "1 o'clock, runs ~20 deg past"
+    },
+    "engine": "perfect-freehand: size 12, thinning .18, smoothing .6, streamline .45, pressure .75->1->.85, tapers 0.6x / 2.4x size; centreline noise 1.1 px @ 220 px + 0.35 px @ 28 px; speed v ~ R^(1/3) x minimum jerk"
+  },
+  "pencil": {
+    "color": "#8F8C85",
+    "size_px": 2.6,
+    "opacity": 0.9,
+    "dash_px": [
+      10,
+      "gap 7-11"
+    ],
+    "icons": "kit/hf/redline.js ICONS (webcam, mic, window, monitor, phone, chat, terminal, cursor, file, globe, person, signal, clock, git, db, bolt, list, spark)",
+    "boil": false
+  },
+  "screens": {
+    "tiers": [
+      "evidence: full bleed, marks on the tracing sheet (window: frost the rest)",
+      "figure: 66-75 % wide, 2 px ink outline, FIG. NN caption",
+      "taped print: stills only, +-1.5 deg, two tape strips"
+    ],
+    "zoom": {
+      "only_to_read": true,
+      "long_form_x": [
+        1.6,
+        2.2
+      ],
+      "reel": "crop to one panel, text >= 40 px",
+      "in_s": 1.1,
+      "in_ease": "expo.out",
+      "out_s": 0.9,
+      "hold": "0.8 s + words / 3 per second, at least 2.5 s",
+      "back_to_back_gap_s": 1.5
+    },
+    "redaction": "a solid bar in the UI's colour (pixelation and blur can be reversed)"
+  },
+  "face": {
+    "room": "his real room, graded only (no cut-out, no background effects by default: claude-makes-claude ledger)",
+    "slots_16x9": {
+      "full": [
+        0,
+        0,
+        1920,
+        1080
+      ],
+      "left": [
+        120,
+        120,
+        780,
+        840
+      ],
+      "right": [
+        1020,
+        120,
+        780,
+        840
+      ],
+      "pip": [
+        1500,
+        600,
+        360,
+        360
+      ],
+      "corner": [
+        1440,
+        60,
+        420,
+        420
+      ]
+    },
+    "slots_9x16": {
+      "full": [
+        0,
+        0,
+        1080,
+        1920
+      ],
+      "top": [
+        60,
+        240,
+        960,
+        640
+      ],
+      "bottom": [
+        60,
+        900,
+        960,
+        660
+      ],
+      "pip": [
+        60,
+        1140,
+        360,
+        420
+      ],
+      "corner": [
+        660,
+        240,
+        360,
+        420
+      ]
+    },
+    "window": "square corners, 2 px ink outline, optional mono label under it",
+    "change": "a hard cut; a 0.28 s slide only when the layout continues",
+    "jump_cut_punch": [
+      1.1,
+      1.14
+    ],
+    "peek": "opt-in: the cut-out rising from the bottom edge, for title cards and the hook",
+    "reel_safe": "face boxes end by y 1560; eyes at y 1380-1480 at the lowest; faceY 0.38; the peek rises over an ink rule at y 1560"
+  },
+  "motion": {
+    "place_s": 0.28,
+    "place_ease": "power3.out",
+    "travel_px": 24,
+    "out_s": 0.2,
+    "out_ease": "power2.in",
+    "rotation": "none (taped prints only)",
+    "never_moves": [
+      "paper",
+      "grid",
+      "a landed headline",
+      "finished ink"
+    ],
+    "never": [
+      "blur-in",
+      "scale-pop",
+      "letter-by-letter typing",
+      "glow",
+      "shadows",
+      "rounded corners",
+      "tilted floating windows",
+      "sway/float on a page"
+    ]
+  },
+  "pacing": {
+    "long_form": {
+      "visual_changes_per_min": [
+        4,
+        7
+      ],
+      "layout_swap_s": [
+        20,
+        40
+      ],
+      "face_share_min": 0.35,
+      "max_layout_share": 0.35,
+      "cards_per_min": 1,
+      "first_30s_rate": "1.5x"
+    },
+    "reel": {
+      "state_change_s": [
+        2,
+        5
+      ],
+      "payoff_by_s": 3,
+      "captions": "always, paper label, max 5 words, no recolour"
+    }
+  },
+  "audio": {
+    "music_under_speech_lu": "-12 (>= 10 LU under the voice)",
+    "duck_db": [
+      12,
+      16
+    ],
+    "sfx": "physical events only: a real marker stroke, a paper sheet; none on cuts; never canned crowd",
+    "pen_cue": "o.sfx.pen (none until recorded)",
+    "sheet_cue": "o.sfx.sheet",
+    "master": {
+      "lufs": -14,
+      "true_peak": -1.0
+    }
+  },
+  "qa": {
+    "precheck": "node kit/qa/precheck.mjs <hf>/index.html (window.__faceRect from R.face)",
+    "holds": "pages, cards, sheets and look() are declared reading holds"
+  },
+  "sketches": "2-3 objects the video actually uses, asymmetric; reuse arrows/brackets later"
+}

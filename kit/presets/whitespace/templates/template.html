@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="film" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080" style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff">
+      <video id="room" class="clip" src="assets/room.mp4" muted playsinline data-start="0" data-duration="__MEDIA__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // preset_whitespace scaffold (kit/presets/whitespace/README.md; 2026-10-22, kit v11): the white canvas, his card and
+      // seated frame with the lens on him, takeovers where a passage shows a thing, and transitions that mean something.
+      // The pipeline is canvas_studio's: copy kit/presets/canvas_studio/templates/{edl.py,build.py} next to this file
+      // (build.py writes D: words, pieces, total, lens, tracks). Rewrite the scenes for the new take: every time below is a
+      // beat in B, and every beat should become a word id (W(i) / WE(i)), never seconds. The fractions of T are only there
+      // so the scaffold builds on any take. The recipes, in order (each is the README §3 recipe, made with kit/hf/trans.js):
+      //   1. hook: his card from frame 1 beside one statement (the hook opens on his face)
+      //   2. a whip to three cards, then a takeover "type" the camera dives into through the middle card (T: zoom)
+      //   3. his seated frame (a large card cropped to his clean wall) while the canvas holds; the lens moves on him
+      //   4. a takeover "list": his card morphs into the list card (card), it leaves by diving into its last point (zoom)
+      //   5. a chapter beat out of his eyes (chapter), then a takeover "evidence" on a cut, his card growing back out of it
+      // Budgets (kit/refs/SCENES.md §9-10): takeovers 15-30 % of a long film, 4-12 s each, 3 s or more of his face between
+      // two, never away more than 12 s; never the same transition twice in a row, whips at most 40 % (window.__trans).
+      // He is never cut out: his graded room (work/room.mp4) in a card, a circle or the seated frame, never blurred or dimmed.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["film"] = tl;                                         // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "film", width: 1920, height: 1080, words: D.words, pieces: D.pieces });
+        const W = K.W, WE = K.WE, Q = K.Q, T = D.total, el = K.el;
+        // the beats (replace each with a word: B.tk1 = [W(212) - 0.1, W(240)], ...)
+        const f = (x) => Q(x * T), B = { whip: f(0.08), tk1: [f(0.14), f(0.22)], frame: f(0.27), tk2: [f(0.36), f(0.44)],
+          chapter: [f(0.55), f(0.55) + 1.8], tk3: [f(0.64), f(0.72)], end: f(0.9) };
+        const P9 = (c, r) => [960 + 1920 * c, 540 + 1080 * r];                    // the stations: a 3 x 3 grid on the canvas
+        const S0 = P9(0, 0), S1 = P9(1, 0), S2 = P9(2, 0), S3 = P9(2, 1), S4 = P9(1, 1);
+        const C = HF.canvas(K, ROOT, { w: 5760, h: 3240, x: S0[0], y: S0[1], z: 1, look: "whitespace" });
+        const HC = HF.C, TR = HF.trans(K, C);
+        const st = (a, b, pos) => C.station(a, b, "mid", pos);
+        const kick = (s) => `<div class="mono" style="font:500 32px/1 ${HF.F.mono};letter-spacing:.14em;text-transform:uppercase;color:${HC.sub}">${s}</div>`;
+        const t1 = (s, size = 56) => `<div class="cv-t" style="font-size:${size}px;line-height:1.08;margin-top:22px">${s}</div>`;
+        const pad = (inner) => `<div style="padding:40px 44px">${inner}</div>`;
+
+        // ---------------------------------------------------------------- 1. the hook: his card beside one statement
+        const F0 = st(0, B.whip + 0.7, S0);
+        el(F0, "left:130px;top:330px;width:900px", `${kick("the whole edit")}<div class="cv-t" style="font-size:92px;line-height:1.02;margin-top:26px">One take in.<br>One film out.</div>`);
+        C.chip(F0, 130, 640, `${HF.icon("video", 30, HC.sub, 2)} <span>recorded once</span>`, 0.8);
+        C.hold(0, B.whip, 0.03);
+
+        // ---------------------------------------------------------------- 2. a whip to three cards; a takeover out of one
+        const F1 = st(B.whip - 0.1, B.tk1[0] + 0.1, S1);
+        C.cam(B.whip, { x: S1[0], y: S1[1], z: 1 }, { dur: 0.55, ease: "expo.inOut" });
+        const cards = [["step one", "Record"], ["step two", "Plan"], ["step three", "Render"]].map(([k, t], i) =>
+          C.card(F1, 140 + i * 450, 330, 400, 300, B.whip + 0.4 + i * 0.3, { html: pad(kick(k) + t1(t, 64)), fromRy: -12, sfx: i ? false : undefined }));
+        C.hold(B.whip + 0.6, B.tk1[0] - 0.3, 0.03);
+        C.takeover(B.tk1[0], B.tk1[1], { kind: "type", in: "zoom", from: cards[1], kicker: "the rule", text: "Neat beats *busy.*",
+          mark: { word: 0, t: B.tk1[0] + 1.6, kind: "underline" }, sub: "one idea on screen, the camera does the rest", out: "fade" });
+        C.cam(B.tk1[0] + 1, { x: S2[0], y: S2[1], z: 1 }, { dur: 0.01, sfx: false });   // moved under the plate (not a transition)
+
+        // ---------------------------------------------------------------- 3. his seated frame: the frame is him (nothing behind
+        // it); then his card steps aside for the line the list will open
+        const F2 = st(B.tk1[1] - 0.1, B.tk2[0] + 0.1, S2);
+        C.card(F2, 1000, 330, 820, 300, B.tk2[0] - 1.3, { html: pad(kick("why it works") + t1("The camera carries it", 60)), fromRy: 10 });
+        C.hold(B.tk1[1] + 0.2, B.tk2[0], 0.025);
+
+        // ---------------------------------------------------------------- 4. his card becomes the list; out by a dive
+        C.takeover(B.tk2[0], B.tk2[1], { kind: "list", in: "card", kicker: "what the kit does", title: "Three things",
+          items: [["cuts on whole sentences", B.tk2[0] + 0.9], ["moves the camera on you", B.tk2[0] + 1.9], ["leaves when it helps", B.tk2[0] + 2.9]],
+          out: "zoom", into: (p) => p.rows[2], to: S3 });
+        const F3 = st(B.tk2[1] - 0.1, B.chapter[0] + 0.1, S3);
+        C.hold(B.tk2[1] + 0.5, B.chapter[0] - 0.3, 0.02);
+
+        // ---------------------------------------------------------------- 5. a chapter out of his eyes; the evidence on a cut
+        TR.chapter(B.chapter[0], B.chapter[1], { num: "02", title: "The pipeline", to: S4 });
+        const F4 = st(B.chapter[1] - 0.1, T + 1, S4);
+        C.card(F4, 130, 300, 860, 300, B.chapter[1] + 0.4, { html: pad(kick("the edit") + t1("Built as a page, seen as a film", 56)), fromRy: -10 });
+        C.hold(B.chapter[1] + 0.3, B.tk3[0] - 0.2, 0.03);
+        const row = (n, s, on) => `<div style="display:flex;gap:26px;align-items:baseline;padding:14px 40px;font:500 32px/1.3 ${HF.F.mono};color:${on ? HC.ink : HC.sub}"><span style="color:${HC.mute};width:44px">${n}</span><span>${s}</span></div>`;
+        C.takeover(B.tk3[0], B.tk3[1], { kind: "evidence", in: "cut", url: "localhost:3000/edit", note: "a mock-up: swap in the real capture (img), dated",
+          html: `<div style="padding:30px 0">${row("01", "cut: whole sentences only")}${row("02", "lens: push, pull, arc, settle")}${row("03", "takeover: he steps out, the scene steps in", true)}${row("04", "mix: one calm bed under the voice")}</div>`,
+          mark: [26, 154, 1060, 60], markAt: B.tk3[0] + 1.2, out: "card" });
+        C.chip(F4, 130, 660, `${HF.icon("git-branch", 30, HC.sub, 2)} <span>one take, one page</span>`, B.tk3[1] + 2.4);
+        C.chip(F4, 130, 760, `<span>the end card lands here</span>`, B.tk3[1] + 6.5);                    // (never 6-10 s with nothing landing)
+        C.hold(B.tk3[1] + 0.3, T, 0.03);
+
+        // ---------------------------------------------------------------- him: a card, a circle or the seated frame
+        // (the takeovers take him off and bring back the shape he had; a shot at a takeover's end is its return)
+        // s: 1.08x over cover (a card's default crop is a tight face crop, past what a 1080p take allows at 1080p)
+        const SRC = [1920, 1080], card = (x, y, w, h, r = 32) => ({ mode: "card", x, y, w, h, r, s: 1.08 * Math.max(w / SRC[0], h / SRC[1]) });
+        C.speaker("room", [
+          { t: 0, ...card(1450, 540, 620, 760) },                                                                   // the hook: his face from frame 1
+          { t: B.whip, ...card(1690, 860, 300, 300, 150), dur: 0.55, ease: "expo.inOut", sfx: false },              // a circle under the whip
+          { t: B.frame, mode: "frame", dur: 0.55 },                                                                  // seated, a large card
+          { t: B.tk2[0] - 1.5, ...card(440, 560, 560, 700), dur: 0.55, ease: HF.E.move, sfx: false },                 // beside, before the list
+          { t: B.tk2[1], mode: "frame", cut: true },                                                                 // lands from the dive, seated
+          { t: B.chapter[1], ...card(1450, 540, 600, 740), cut: true },
+          { t: B.end, ...card(1690, 860, 300, 300, 150), dur: 0.6, ease: HF.E.move, sfx: false },
+        ], { src: SRC, at: [960, 470], head: 300, clean: D.clean || undefined });
+
+        K.finish(T);
+      })();
+    </script>
+  </body>
+</html>

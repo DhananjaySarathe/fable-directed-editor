@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="rlreel" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920" style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#FBFAF6">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (9:16): the Redline look on HF.reel (kit/hf/demos/redline/build.py). Made-up words, a still camera, real
+      // published screens. A check page for the look, not an edit.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["rlreel"] = tl;                                             // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "rlreel", width: 1080, height: 1920, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.reel(K, ROOT, st, { end: D.total, talk: D.total - 0.5, label: "" });
+        const R = HF.redline(S, st, {});
+        const [a0, a1] = D.w.a, [b0, b1] = D.w.b, [c0, c1] = D.w.c, [d0, d1] = D.w.d;
+
+        R.face([{ t: 0, at: "off" }, { t: 4.4, at: "bottom" }, { t: 10, at: "full" }, { t: 15.2, at: "off" }], { at: [540, 1560], faceY: 0.62 });
+
+        // 1. the hook: the page, two lines, the pen under the turn, his face rising over a pencil rule (above the app's UI)
+        R.card(0, 4.4, { title: "Claude built it.|*I fixed it.*", lines: 2, size: 128, y: 380, sub: "6 hours  ·  one live app", markAt: 1.9,
+          peek: { src: "assets/peek.png", w: 900 } });
+        S.cover(a0, a1);
+
+        // 2. one line of the screen on top (cut through whitespace, phone size), his room below, the caption on the seam
+        { const L = R.page(4.4, 10);
+          const f = R.fig(L, 60, 560, 960, 120, { img: "assets/limit.png", srcW: 1500, srcH: 1220, caption: "Gemini, day 1" });
+          f.place(4.45, 10);
+          f.look(4.45, [80, 988, 780, 64], { dur: 0.01, until: 9.8, why: "the limit: one line, phone size" });
+          f.sheet(6.6, 9.8);
+          f.mark("underline", [100, 1012, 540, 46], 7.0); }
+
+        // 4. one number, on the page, centred, his face peeking over the rule
+        { const L = R.page(15.2, D.total);
+          R.stat(L, 0, 470, "6h", "one live app", 15.5, { align: "center", size: 360, src: "my screen recording", markAt: 16.3 });
+          R.peek(L, 15.2, D.total, { src: "assets/peek.png", w: 640 }); }
+        S.cover(d0, d1);
+
+        // captions: a paper label, the spoken word never recoloured; on the seam in the split, under his face when full
+        R.captions({ y: (a) => (a >= 4.4 && a < 10 ? 770 : 1180) });
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>

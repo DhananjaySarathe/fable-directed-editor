@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="dgflat" data-start="0" data-duration="__TOTAL__" data-width="1920" data-height="1080"
+      style="position:relative;width:1920px;height:1080px;overflow:hidden;background:#fff"></div>
+    <script>
+      // FIXTURE (a check page, not an edit; made-up copy, no numbers): the flat diagram (kit/hf/diagram.js style "flat",
+      // kit/refs/DIAGRAMS.md) on the whitespace look, one scene per type the router picks:
+      //   0-7 a loop (a row and its way back, the meaning on the return path, one focal node, the token on the loop)
+      //   7-14 a process (four steps, done checks, a node made focal while he names it, the one note chip)
+      //   14-21 a hub (one input fanning out to three parts: straight where it lines up, z turns where it can't)
+      //   21-28 layers (a stack, top to bottom), the camera focusing on one layer and back out
+      (function () {
+        HF.look("whitespace");
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = { dgflat: tl };
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "dgflat", width: 1920, height: 1080, words: [], pieces: [] });
+        const layer = (a, b) => { const L = K.el(ROOT, "left:0;top:0;width:1920px;height:1080px"); K.show(L, a, b); return L; };
+        // ---- 0-7 the loop
+        {
+          const L = layer(0, 7);
+          const dg = HF.diagram(K, L, { title: "the loop", type: "loop",
+            nodes: [{ id: "build", label: "Build", sub: "HTML + GSAP", mono: true }, { id: "draft", label: "Draft", sub: "1080p", mono: true },
+              { id: "critic", label: "Critic", sub: "checks every frame", focal: true }],
+            edges: [["build", "draft"], ["draft", "critic"], { from: "critic", to: "build", label: "fix what broke", accent: true }] });
+          dg.show(0, 7).reveal("build", 0.4).reveal("draft", 1.0).reveal("critic", 1.6);
+          dg.connect("build", "draft", 0.8).connect("draft", "critic", 1.4).connect("critic", "build", 2.2, 0.9);
+          dg.flow([["build", "draft"], ["draft", "critic"], ["critic", "build"]], 3.4, { period: 3.2 });
+        }
+        // ---- 7-14 a process
+        {
+          const L = layer(7, 14);
+          const dg = HF.diagram(K, L, { title: "one edit", type: "process",
+            nodes: [{ id: "rec", label: "Record", sub: "one take" }, { id: "cut", label: "Cut", sub: "whole sentences" },
+              { id: "lens", label: "Lens", sub: "the camera on him" }, { id: "out", label: "Render", sub: "one job at a time" }],
+            edges: [["rec", "cut"], ["cut", "lens"], ["lens", "out"]] });
+          dg.show(7, 14).reveal("rec", 7.3).reveal("cut", 7.8).reveal("lens", 8.3).reveal("out", 8.8);
+          dg.connect("rec", "cut", 7.6).connect("cut", "lens", 8.1).connect("lens", "out", 8.6);
+          dg.done(["rec", "cut"], 9.6).highlight("lens", 10.2, 13.2).note("lens", 10.6, "pushes, pulls and arcs", 13.2);
+          dg.flow("cut", "lens", 10.4, { period: 3 });
+        }
+        // ---- 14-21 a hub
+        {
+          const L = layer(14, 21);
+          const dg = HF.diagram(K, L, { title: "one page", type: "hub", layout: "hub", hub: "page",
+            nodes: [{ id: "page", label: "The page", sub: "HTML", mono: true, kind: "input" }, { id: "look", label: "Look", sub: "white, one accent" },
+              { id: "cam", label: "Camera", sub: "on him", focal: true }, { id: "scene", label: "Takeover", sub: "him off" }],
+            edges: [["page", "look"], ["page", "cam"], ["page", "scene"]] });
+          dg.show(14, 21).reveal("page", 14.3).reveal(["look", "cam"], 14.9, 0.24).reveal("scene", 15.5);
+          dg.connect("page", "look", 15.0).connect("page", "cam", 15.3).connect("page", "scene", 15.8);
+          dg.flow("page", "cam", 16.6, { period: 3 });
+        }
+        // ---- 21-28 layers
+        {
+          const L = layer(21, 28);
+          const dg = HF.diagram(K, L, { title: "four layers", type: "layers", layout: "column", steps: false,
+            nodes: [{ id: "me", label: "Me", tag: "L1" }, { id: "agent", label: "The agent", tag: "L2", focal: true }, { id: "kit", label: "The kit", tag: "L3" }],
+            edges: [{ from: "me", to: "agent", label: "asks" }, { from: "agent", to: "kit", label: "runs" }, { from: "kit", to: "agent", label: "reports" }] });
+          dg.show(21, 28).reveal("me", 21.3).reveal("agent", 21.8).reveal("kit", 22.3);
+          dg.connect("me", "agent", 21.6).connect("agent", "kit", 22.1).connect("kit", "agent", 22.9);
+          dg.focus("kit", 24.2, { zoom: 1.4 }).overview(26.2);
+        }
+        K.finish(__TOTAL__);
+        window.__seek = async (t) => { tl.seek(t, false); };
+      })();
+    </script>
+  </body>
+</html>

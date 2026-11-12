@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+    <style>
+      .full { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+      video.full { object-fit: cover; }
+      .cap { position: absolute; left: 60px; width: 960px; text-align: center; font-family: "Montserrat", sans-serif; font-weight: 900; font-size: 72px;
+             line-height: 1.08; color: #fff; text-transform: uppercase; letter-spacing: -0.005em;
+             text-shadow: 0 6px 0 rgba(0,0,0,0.35), 0 0 18px rgba(0,0,0,0.55); -webkit-text-stroke: 2px rgba(0,0,0,0.55); paint-order: stroke fill; }
+      .cap b { color: #f2b33d; }
+      .hook { position: absolute; left: 60px; width: 960px; text-align: center; }
+      .tagc { font-family: "Inter", sans-serif; font-weight: 800; font-size: 30px; color: #15120c; background: #f4ede1; padding: 8px 18px; border-radius: 10px; }
+      .divider { position: absolute; left: 0; top: 957px; width: 1080px; height: 6px; background: #0b0d0c; }
+      .board { background: radial-gradient(ellipse 90% 70% at 50% 40%, #1b201c 0%, #0c0f0d 70%, #080a09 100%); }
+      .win { position: absolute; border-radius: 22px; overflow: hidden; background: #fff; box-shadow: 0 40px 90px rgba(0,0,0,0.6); }
+      .win img { display: block; width: 100%; }
+      .paper { position: absolute; background: #fff; box-shadow: 0 30px 70px rgba(0,0,0,0.55); }
+      .paper img { display: block; width: 100%; }
+      .lbl { font-family: "JBMono", monospace; font-weight: 700; font-size: 26px; letter-spacing: 0.26em; color: #f2b33d; text-transform: uppercase; }
+      .circle { position: absolute; border-radius: 50%; overflow: hidden; border: 6px solid #f4ede1; box-shadow: 0 24px 60px rgba(0,0,0,0.6); }
+      .bar { position: absolute; left: 0; top: 0; height: 8px; background: #f2b33d; z-index: 90; transform-origin: 0 50%; }
+      .grain { z-index: 80; opacity: 0.06; mix-blend-mode: overlay; background-image: url(assets/grain.png); background-size: 512px 512px; }
+      .endt { font-family: "InstrumentSerif", serif; font-size: 120px; line-height: 1.0; color: #f4ede1; text-align: center; }
+      .endt i { color: #f2b33d; }
+      .chip { display: inline-block; font-family: "Inter", sans-serif; font-weight: 800; font-size: 54px; color: #15120c; background: #f2b33d;
+              padding: 16px 34px 18px; border-radius: 18px; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="short" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920"
+         style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#0b0d0c"></div>
+    <script>
+      /*DATA*/
+      // A vertical Short from the podcast (kit/podcast/shorts.py): face / stack / card / slam layouts, phrase captions,
+      // a designed hook, a progress bar, and the "full podcast on YouTube" card at the end.
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["short"] = tl;                                         // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "short", width: 1080, height: 1920 });
+        const Q = K.Q, f = 1 / 30, T = D.total, END = D.end_len, TT = T + END;
+        const el = (parent, style, html, cls) => K.el(parent, style, html || "", cls == null ? "hf-abs" : cls);
+        const vid = (parent, src, z, extra) => {
+          const w = el(parent, `left:0;top:0;width:1080px;height:1920px;z-index:${z};transform-origin:50% 38%`);
+          w.innerHTML = `<video id="${K.vid("v")}" class="clip full" src="${src}" muted playsinline data-start="0" data-duration="${T.toFixed(3)}" data-media-start="0" data-track-index="${z}" ${extra || ""}></video>`;
+          return w;
+        };
+        // ---- the picture layers
+        const FACE = vid(ROOT, "assets/face.mp4", 2), STACK = vid(ROOT, "assets/stack.mp4", 3);
+        el(STACK, "", "", "divider");
+        const nameA = el(STACK, "left:34px;top:30px;z-index:2", `<span class="tagc">${HF.esc(D.names.A)}</span>`);
+        const nameB = el(STACK, "left:34px;top:990px;z-index:2", `<span class="tagc">${HF.esc(D.names.B)}</span>`);
+        // layouts in time: [{t, kind}] (face | stack | card | slam); the visible picture layer switches with a small punch
+        const L = D.layouts.slice().sort((a, b) => a.t - b.t);
+        const kindAt = (t) => { let k = L[0].kind; for (const x of L) if (x.t <= t + 1e-6) k = x.kind; return k; };
+        L.forEach((x, i) => {
+          const b = i + 1 < L.length ? L[i + 1].t : T;
+          const layer = x.kind === "stack" ? STACK : FACE;
+          if (x.t > 0) tl.fromTo(layer, { scale: 1.07 }, { scale: 1.0, duration: 0.28, ease: HF.E.in, immediateRender: false }, Q(x.t));
+          if (x.kind === "face") tl.fromTo(layer, { scale: 1.0 }, { scale: 1.035, duration: Math.max(0.4, b - x.t - 0.28), ease: "none", immediateRender: false }, Q(x.t + 0.28));
+        });
+        K.onFrame((t) => {                                    // opacity, not visibility: the clip runtime sets its own visibility on the video
+          const k = kindAt(t);
+          STACK.style.opacity = k === "stack" ? "1" : "0";
+          FACE.style.opacity = k === "stack" ? "0" : "1";
+        });
+        // the face layer also punches in on every speaker change (a cut, not a drift)
+        (D.faceshots || []).forEach((s) => { if (s.a > 0.05 && kindAt(s.a) === "face") tl.fromTo(FACE, { scale: 1.05 }, { scale: 1.0, duration: 0.24, ease: HF.E.in, immediateRender: false }, Q(s.a)); });
+
+        // ---- cards: a full-screen proof with the speaker in a circle
+        (D.cards || []).forEach((c, k) => {
+          const bd = el(ROOT, "z-index:20", "", "hf-abs full board");
+          K.show(bd, c.a, c.b);
+          tl.fromTo(bd, { opacity: 0 }, { opacity: 1, duration: 0.25, ease: HF.E.in, immediateRender: false }, Q(c.a));
+          const lab = el(bd, "left:0;top:560px;width:1080px;text-align:center", `<div class="lbl">${HF.esc(c.label || "")}</div>`);
+          // a card shows a window of its image (h): a portrait page doesn't run into the captions below it
+          const hh = c.h ? `height:${c.h}px;overflow:hidden;` : "";
+          const w = c.paper ? el(bd, `left:${(1080 - c.w) / 2}px;top:${c.y || 640}px;width:${c.w}px;${hh}`, `<img src="${c.img}">`, "paper")
+                            : el(bd, `left:${(1080 - c.w) / 2}px;top:${c.y || 640}px;width:${c.w}px;${hh}`, `<img src="${c.img}">`, "win");
+          HF.land(K, w, c.a + 0.05, { from: { y: 120, scale: 0.92, rotation: k % 2 ? 2 : -2, blur: 12 }, spring: "snappy" });
+          HF.land(K, lab, c.a + 0.15, { from: { y: 20, blur: 6 } });
+          if (c.zoom) {                                                          // a slow push to the part that matters
+            const [zx, zy, zs] = c.zoom;
+            w.style.transformOrigin = `${zx * 100}% ${zy * 100}%`;
+            tl.fromTo(w.firstChild, { scale: 1 }, { scale: zs, duration: Math.max(0.5, c.b - c.a - 0.6), ease: HF.E.move, immediateRender: false, transformOrigin: `${zx * 100}% ${zy * 100}%` }, Q(c.a + 0.5));
+          }
+          // the speaker, in a circle above the proof
+          const cw = el(bd, "left:390px;top:150px;width:300px;height:300px", "", "hf-abs circle");
+          cw.innerHTML = `<video id="${K.vid("c")}" class="clip" src="assets/face.mp4" muted playsinline data-start="0" data-duration="${T.toFixed(3)}" data-media-start="0" data-track-index="${30 + k}" style="position:absolute;left:-30px;top:-60px;width:360px;height:640px;object-fit:cover"></video>`;
+          HF.land(K, cw, c.a + 0.1, { from: { scale: 0.6, blur: 8 }, spring: "snappy" });
+        });
+
+        // ---- slams: one hero word over the darkened picture
+        (D.slams || []).forEach((s) => {
+          const dim = el(ROOT, "z-index:25;background:rgba(5,6,5,0.55)", "", "hf-abs full");
+          K.show(dim, s.t - 0.02, s.b);
+          tl.fromTo(dim, { opacity: 0 }, { opacity: 1, duration: 0.12, ease: "none", immediateRender: false }, Q(s.t - 0.02));
+          const box = el(ROOT, "z-index:26;left:0;top:0;width:1080px;height:1920px");
+          K.show(box, s.t - 0.02, s.b);
+          const kt = HF.kinetic(K, box, { text: s.text, at: s.t, style: "slam", size: s.size || 170, x: 60, y: s.y || 760, w: 960, color: "#ffffff",
+            accent: "#f2b33d", onAccent: "#15120c", sfx: null, lh: 1.0 });
+          kt.box.style.textShadow = "0 8px 30px rgba(0,0,0,0.6)";
+          kt.out(s.b - 0.2);
+        });
+
+        // ---- the hook: the stakes in 5 words or fewer, top third, from frame 1
+        const H = el(ROOT, "z-index:40;left:0;top:0;width:1080px;height:1920px");
+        K.show(H, 0, D.hook.until);
+        const plate = el(H, "left:40px;top:250px;width:1000px;height:330px;background:linear-gradient(180deg,rgba(5,6,5,0.0),rgba(5,6,5,0.55) 30%,rgba(5,6,5,0.55) 70%,rgba(5,6,5,0));border-radius:24px");
+        const hk = HF.kinetic(K, H, { text: D.hook.text, at: 0.04, style: "slam", size: D.hook.size || 112, x: 60, y: 300, w: 960, color: "#ffffff",
+          accent: "#f2b33d", onAccent: "#15120c", sfx: null, lh: 1.02, per: 2 / 30 });
+        hk.box.style.textShadow = "0 6px 26px rgba(0,0,0,0.6)";
+        hk.out(D.hook.until - 0.25);
+        tl.to(plate, { opacity: 0, duration: 0.25, ease: HF.E.out, immediateRender: false }, Q(D.hook.until - 0.25));
+        if (D.kicker) {
+          const kk = el(H, "left:0;top:205px;width:1080px;text-align:center", `<div class="lbl" style="font-size:24px;color:rgba(244,237,225,0.85)">${HF.esc(D.kicker)}</div>`);
+          HF.land(K, kk, 0.2, { from: { y: 14, blur: 6 } });
+        }
+
+        // ---- captions: phrase by phrase, where the layout leaves room
+        const CAP = el(ROOT, "z-index:50;left:0;top:0;width:1080px;height:1920px");
+        const inSlam = (t) => (D.slams || []).some((x) => t >= x.t - 0.05 && t < x.b);
+        D.caps.forEach((c) => {
+          if (inSlam(c.a + 0.02)) return;                     // the slam says it bigger
+          const k = kindAt(c.a + 0.05);
+          const card = (D.cards || []).find((x) => c.a >= x.a - 0.05 && c.a < x.b);
+          const y = card ? (card.capY || (card.y || 640) + (card.h || card.w * 0.625) + 60) : k === "stack" ? 905 : 1180;
+          const e = el(CAP, `top:${y}px`, c.html, "cap");
+          K.show(e, c.a, c.b);
+          const sp = HF.spring(HF.SPRING.snappy);
+          tl.fromTo(e, { scale: 0.86, y: 18 }, { scale: 1, y: 0, duration: sp.duration * 0.7, ease: sp.ease, immediateRender: false }, Q(c.a));
+        });
+
+        // ---- the progress bar (the eye always knows there is more)
+        const bar = el(ROOT, "", "", "bar");
+        bar.style.width = "1080px";
+        tl.fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: T, ease: "none", immediateRender: false }, 0);
+        K.show(bar, 0, T);
+
+        // ---- the end card: the full podcast on YouTube
+        const EC = el(ROOT, "z-index:70;left:0;top:0;width:1080px;height:1920px");
+        K.show(EC, T, TT);
+        const bg = el(EC, "", `<img src="assets/last.jpg" class="full" style="object-fit:cover">`, "hf-abs full");
+        tl.fromTo(bg, { filter: "brightness(0.9) blur(0px)", scale: 1 }, { filter: "brightness(0.3) blur(14px)", scale: 1.08, duration: 0.6, ease: HF.E.in, immediateRender: false }, Q(T));
+        const t1 = el(EC, "left:0;top:620px;width:1080px", `<div class="endt">The full<br><i>podcast</i> is on<br>YouTube</div>`);
+        const t2 = el(EC, "left:0;top:1120px;width:1080px;text-align:center", `<span class="chip">@yourchannel</span>`);
+        const t3 = el(EC, "left:0;top:1260px;width:1080px;text-align:center", `<div class="lbl" style="font-size:24px;letter-spacing:0.12em;line-height:1.5;padding:0 70px;color:rgba(244,237,225,0.8)">${HF.esc(D.episode)}</div>`);
+        HF.land(K, t1, T + 0.12, { from: { y: 60, blur: 14 }, spring: "snappy" });
+        HF.land(K, t2, T + 0.45, { from: { scale: 0.6, y: 20, blur: 8 }, spring: "thrown" });
+        HF.land(K, t3, T + 0.7, { from: { y: 16, blur: 6 } });
+
+        const gr = el(ROOT, "", "", "hf-abs full grain");
+        K.onFrame((t) => { const n = Math.floor(t * 30); gr.style.backgroundPosition = `${(n * 397) % 512}px ${(n * 211) % 512}px`; });
+        K.finish(TT);
+      })();
+    </script>
+  </body>
+</html>

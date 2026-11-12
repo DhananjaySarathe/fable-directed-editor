@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <!--HF:KIT-->
+  </head>
+  <body>
+    <div id="root" data-composition-id="auditreel" data-start="0" data-duration="__TOTAL__" data-width="1080" data-height="1920" style="position:relative;width:1080px;height:1920px;overflow:hidden;background:#f6f1ec">
+      <video id="aroll" class="clip" src="assets/take.mp4" muted playsinline data-start="0" data-duration="__TOTAL__" data-media-start="0" data-track-index="2"></video>
+    </div>
+    <script>
+      /*DATA*/
+      // FIXTURE (9:16): repro of kit/refs/AUDIT_2026-10-20.md §3 on HF.reel with a 16:9 camera (kit/hf/demos/audit/check.mjs).
+      (function () {
+        const tl = gsap.timeline({ paused: true });
+        window.__timelines = window.__timelines || {};
+        window.__timelines["auditreel"] = tl;                                          // the linter looks for this line
+        const ROOT = document.getElementById("root");
+        const K = HF.kit({ tl, id: "auditreel", width: 1080, height: 1920, words: D.words, pieces: D.pieces });
+        const st = HF.stage(K, ROOT, { aroll: "aroll" });
+        const S = HF.reel(K, ROOT, st, { end: D.total, talk: D.total - 0.4, src: [1920, 1080], label: "fixture · audit" });
+        const { C, layer, say, line, strike, beat } = S;
+        const A = (window.__audit = {});
+        beat(0, "beside", { side: "top" });                  // the words on top, the face card below; the picture cuts at 4 s
+        { const L = layer(0.2, 9);
+          A.say = say(L, 0, 2, { x: 60, y: 300, size: 100 });
+          A.acc1 = line(L, "What is *HackerRank?*", 0.3, { x: 60, y: 460, size: 80 }).box;
+          A.acc2 = line(L, "*several words* here", 0.5, { x: 60, y: 580, size: 80 }).box;
+          A.plate = say(L, 3, 5, { x: 60, y: 720, size: 80 }); }
+        A.strikeEnd = strike(S.FRONT, 60, 640, 600, 1.5, null, C.acc, 3.5);
+        S.box();
+        K.finish(D.total);
+      })();
+    </script>
+  </body>
+</html>
